@@ -1,10 +1,89 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Repository.Models;
+using  Core.Models;
+using Core.Interfaces.Services;
+using Service.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Security.Claims;
+using System.Text.Json;
+using Core.Interfaces.Repositories;
+using Repository.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+#region Jwt configuration 
+
+var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
+var jwtAudience = builder.Configuration.GetSection("Jwt:Audience").Get<string>();
+var jwtKey = builder.Configuration.GetSection("Jwt:Key").Get<string>();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+     .AddJwtBearer(options =>
+     {
+         options.TokenValidationParameters = new TokenValidationParameters
+         {
+             ValidateIssuer = true,
+             ValidateAudience = true,
+             ValidateLifetime = true,
+             ValidateIssuerSigningKey = true,
+             ValidIssuer = jwtIssuer,
+             ValidAudience = jwtAudience,
+             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+             RoleClaimType = ClaimTypes.Role
+         };
+
+         options.Events = new JwtBearerEvents
+         {
+             // Customize the 401 response
+             OnChallenge = context =>
+             {
+                 // Skip the default response
+                 context.HandleResponse();
+
+                 // Customize the response
+                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                 context.Response.ContentType = "application/json";
+
+                 var result = JsonSerializer.Serialize(new
+                 {
+                     success = false,
+                     message = "Access Denied. Token is missing or invalid."
+                 });
+
+                 return context.Response.WriteAsync(result);
+             },
+
+             // Customize the 403 response
+             OnForbidden = context =>
+             {
+                 // Customize the response
+                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                 context.Response.ContentType = "application/json";
+
+                 var result = JsonSerializer.Serialize(new
+                 {
+                     success = false,
+                     message = "Access Denied. You do not have permission to access this resource."
+                 });
+
+                 return context.Response.WriteAsync(result);
+             }
+         };
+     });
+#endregion
 // Add services to the container.
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddHttpContextAccessor();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
