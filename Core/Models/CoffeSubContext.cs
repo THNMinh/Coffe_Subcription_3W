@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace Repository.Models;
+namespace Core.Models;
 
 public partial class CoffeSubContext : DbContext
 {
@@ -259,7 +259,7 @@ public partial class CoffeSubContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__users__B9BE370F6D878BEE");
+            entity.HasKey(e => e.Id).HasName("PK__users__B9BE370F6D878BEE");
 
             entity.ToTable("users");
 
@@ -267,7 +267,7 @@ public partial class CoffeSubContext : DbContext
 
             entity.HasIndex(e => e.Username, "UQ__users__F3DBC57217C1A9C4").IsUnique();
 
-            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.Id).HasColumnName("user_id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
