@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36301.6 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "WebAPI\WebAPI.csproj", "{55185715-0FEA-46B1-9FE5-FDA1A76CBD1B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{DC61DBE7-3DBD-40A6-9ABC-B6C0E4FF4554}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository", "Repository\Repository.csproj", "{4B829E03-46AA-4D77-A04F-1C32D4BC5A7B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{55185715-0FEA-46B1-9FE5-FDA1A76CBD1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55185715-0FEA-46B1-9FE5-FDA1A76CBD1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55185715-0FEA-46B1-9FE5-FDA1A76CBD1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55185715-0FEA-46B1-9FE5-FDA1A76CBD1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC61DBE7-3DBD-40A6-9ABC-B6C0E4FF4554}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC61DBE7-3DBD-40A6-9ABC-B6C0E4FF4554}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC61DBE7-3DBD-40A6-9ABC-B6C0E4FF4554}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC61DBE7-3DBD-40A6-9ABC-B6C0E4FF4554}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B829E03-46AA-4D77-A04F-1C32D4BC5A7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B829E03-46AA-4D77-A04F-1C32D4BC5A7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B829E03-46AA-4D77-A04F-1C32D4BC5A7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B829E03-46AA-4D77-A04F-1C32D4BC5A7B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {15D3B9EB-D82E-40B4-876B-0AF81A3F1BC8}
+	EndGlobalSection
+EndGlobal
