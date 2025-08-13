@@ -1,15 +1,16 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using  Core.Models;
-using Core.Interfaces.Services;
-using Service.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.Security.Claims;
-using System.Text.Json;
 using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
+using  Core.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Repository.Repositories;
+using Service.Services;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
+using VNPAY;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,6 +83,8 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+// Add VNPAY service to the container.
+builder.Services.AddSingleton<IVnpay, Vnpay>();
 builder.Services.AddHttpContextAccessor();
 
 

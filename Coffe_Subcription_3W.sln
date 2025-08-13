@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository", "Repository\Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{A60821DD-ED48-476C-8033-AF4C0F84A73A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNPAY", "VNPAY\VNPAY.csproj", "{AEE9F8EA-5B07-4DFF-907B-712F6085B555}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{A60821DD-ED48-476C-8033-AF4C0F84A73A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A60821DD-ED48-476C-8033-AF4C0F84A73A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A60821DD-ED48-476C-8033-AF4C0F84A73A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEE9F8EA-5B07-4DFF-907B-712F6085B555}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEE9F8EA-5B07-4DFF-907B-712F6085B555}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEE9F8EA-5B07-4DFF-907B-712F6085B555}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEE9F8EA-5B07-4DFF-907B-712F6085B555}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
