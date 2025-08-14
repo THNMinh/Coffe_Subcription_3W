@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Core.Interfaces.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using VNPAY;
 using VNPAY.Enums;
 using VNPAY.Models;
@@ -12,13 +13,16 @@ namespace Backend_API_Testing.Controllers
     {
         private readonly IVnpay _vnpay;
         private readonly IConfiguration _configuration;
+        private readonly ISubscriptionPlanRepository _subscriptionPlanRepository;
 
-        public VnpayController(IVnpay vnPayservice, IConfiguration configuration)
+        public VnpayController(IVnpay vnPayservice, IConfiguration configuration, ISubscriptionPlanRepository subscriptionPlanRepository)
         {
             _vnpay = vnPayservice;
             _configuration = configuration;
 
             _vnpay.Initialize(_configuration["Vnpay:TmnCode"], _configuration["Vnpay:HashSecret"], _configuration["Vnpay:BaseUrl"], _configuration["Vnpay:CallbackUrl"]);
+
+            _subscriptionPlanRepository = subscriptionPlanRepository;
         }
 
         /// <summary>
@@ -28,16 +32,17 @@ namespace Backend_API_Testing.Controllers
         /// <param name="description">Mô tả giao dịch</param>
         /// <returns></returns>
         [HttpGet("CreatePaymentUrl")]
-        public ActionResult<string> CreatePaymentUrl(double money, string description)
+        public async Task<ActionResult<string>> CreatePaymentUrlAsync(int planId, string description)
         {
             try
             {
+                var subPlan = await _subscriptionPlanRepository.GetByIdAsync(planId); // Kiểm tra xem gói đăng ký có tồn tại hay không
                 var ipAddress = NetworkHelper.GetIpAddress(HttpContext); // Lấy địa chỉ IP của thiết bị thực hiện giao dịch
 
                 var request = new PaymentRequest
                 {
                     PaymentId = DateTime.Now.Ticks,
-                    Money = money,
+                    Money = (double)subPlan.Price,
                     Description = description,
                     IpAddress = ipAddress,
                     BankCode = BankCode.ANY, // Tùy chọn. Mặc định là tất cả phương thức giao dịch
