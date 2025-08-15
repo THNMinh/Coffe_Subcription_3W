@@ -99,6 +99,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 //1.Configure conn db
+builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddDbContext<CoffeSubContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
