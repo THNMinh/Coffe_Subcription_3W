@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Repository.Repositories;
 using Service.Services;
+using System;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
@@ -99,9 +100,15 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 //1.Configure conn db
-builder.Configuration.AddEnvironmentVariables();
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
+var dbUser = Environment.GetEnvironmentVariable("DB_USER");
+var dbPass = Environment.GetEnvironmentVariable("DB_PASS");
+var dbName = Environment.GetEnvironmentVariable("DB_NAME");
+
+var connectionString = $"Server={dbHost},1433;uid={dbUser};pwd={dbPass};database={dbName};TrustServerCertificate=True;";
+
 builder.Services.AddDbContext<CoffeSubContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString));
 
 #region Swagger Configuration
 
