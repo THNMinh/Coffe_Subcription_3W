@@ -100,16 +100,9 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 //1.Configure conn db
-var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-var dbUser = Environment.GetEnvironmentVariable("DB_USER");
-var dbPass = Environment.GetEnvironmentVariable("DB_PASS");
-var dbName = Environment.GetEnvironmentVariable("DB_NAME");
-
-var connectionString = $"Server={dbHost},1433;uid={dbUser};pwd={dbPass};database={dbName};TrustServerCertificate=True;";
-
 builder.Services.AddDbContext<CoffeSubContext>(options =>
-    options.UseSqlServer(connectionString));
-
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 #region Swagger Configuration
 
 builder.Services.AddSwaggerGen(c =>

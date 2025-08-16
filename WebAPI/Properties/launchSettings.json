@@ -13,7 +13,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "SMTP_PASSWORD": "pcgw tanh mmtm xvdn",
-        "DB_HOST": "192.168.1.8",
+        "DB_HOST": "222.254.155.34 ",
         "DB_USER": "sa",
         "DB_PASS": "12345",
         "DB_NAME": "coffe_3w"
