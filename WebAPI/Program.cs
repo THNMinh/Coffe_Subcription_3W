@@ -1,3 +1,4 @@
+using Core.Extensions;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using  Core.Models;
@@ -11,6 +12,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using VNPAY;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,16 +81,7 @@ builder.Services.AddAuthentication(options =>
      });
 #endregion
 // Add services to the container.
-builder.Services.AddScoped<IJwtService, JwtService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IEmailService, EmailService>();
 
-
-builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
-builder.Services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
-builder.Services.AddScoped<ICoffeeItemRepository, CoffeeItemRepository>();
- 
 // Add VNPAY service to the container.
 builder.Services.AddSingleton<IVnpay, Vnpay>();
 builder.Services.AddHttpContextAccessor();
@@ -135,6 +128,10 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 #endregion
+
+
+builder.Services.Register();
+//builder.Services.RegisterMapsterConfiguration();
 
 var app = builder.Build();
 
