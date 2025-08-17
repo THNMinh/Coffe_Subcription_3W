@@ -11,7 +11,7 @@ namespace Core.Interfaces.Services
 {
     public interface IUserService
     {
-        Task<bool> IsUserExists(string email);
+        Task<bool> IsUserExists(int type, string request);
         Task RegisterAsync(RegisterRequestDTO requestDTO);
         Task<User?> AuthenticateUserAsync(string email, string password);
         Task<UserDTO?> FindByEmailAsync(string email);

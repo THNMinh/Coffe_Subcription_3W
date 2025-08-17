@@ -1,3 +1,4 @@
+using Core.Extensions;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using  Core.Models;
@@ -12,6 +13,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using VNPAY;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,17 +81,10 @@ builder.Services.AddAuthentication(options =>
          };
      });
 #endregion
+var clientId = builder.Configuration["Authentication:Google:ClientId"];
+
 // Add services to the container.
-builder.Services.AddScoped<IJwtService, JwtService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IEmailService, EmailService>();
 
-
-builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
-builder.Services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
-builder.Services.AddScoped<ICoffeeItemRepository, CoffeeItemRepository>();
- 
 // Add VNPAY service to the container.
 builder.Services.AddSingleton<IVnpay, Vnpay>();
 builder.Services.AddHttpContextAccessor();
@@ -98,7 +93,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
+builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Information);
+builder.Logging.AddConsole();
 //1.Configure conn db
 builder.Services.AddDbContext<CoffeSubContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
@@ -107,7 +103,7 @@ builder.Services.AddDbContext<CoffeSubContext>(options =>
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Coffee Subscription API", Version = "v1" });
 
     // Add JWT Authentication to Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -136,6 +132,10 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 #endregion
+
+
+builder.Services.Register();
+//builder.Services.RegisterMapsterConfiguration();
 
 var app = builder.Build();
 

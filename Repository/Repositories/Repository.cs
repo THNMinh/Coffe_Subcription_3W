@@ -125,7 +125,14 @@ namespace Repository.Repositories
         {
             if (entity != null)
             {
-                _context.Update(entity);
+                var tracked = _context.ChangeTracker.Entries<T>()
+                                      .FirstOrDefault(e => e.Entity.Equals(entity));
+                if (tracked == null)
+                {
+                    _context.Attach(entity);
+                }
+                _context.Entry(entity).State = EntityState.Modified;
+
                 return _context.SaveChanges() > 0;
             }
             return false;

@@ -6,6 +6,8 @@ using Core.Interfaces.Services;
 using Core.DTOs;
 using Core.DTOs.Response;
 using Core.DTOs.Request;
+using Service.Services;
+using Newtonsoft.Json.Linq;
 
 namespace WebAPI.Controllers
 {
@@ -14,12 +16,15 @@ namespace WebAPI.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IJwtService _jwtService;
+        private readonly IGoogleAuthService _googleAuthService;
         private readonly IUserService _userService;
         private readonly IEmailService _emailService;
 
-        public AuthController(IJwtService jwtService, IUserService userService, IEmailService emailService)
+        public AuthController(IJwtService jwtService, IGoogleAuthService googleAuthService,
+            IUserService userService, IEmailService emailService)
         {
             _jwtService = jwtService;
+            _googleAuthService = googleAuthService;
             _userService = userService;
             _emailService = emailService;
         }
@@ -59,6 +64,46 @@ namespace WebAPI.Controllers
             });
         }
 
+        #endregion
+
+        #region Google Login
+        [HttpPost("google-login")]
+        [ProducesResponseType(typeof(ApiResponseDTO<LoginDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDTO request)
+        {
+            string idToken = request?.Token;
+            if (request == null || string.IsNullOrEmpty(idToken))
+                return BadRequest(new ApiResponseDTO<object>
+                {
+                    Success = false,
+                    Message = "No Token provided"
+                });
+
+            try
+            {
+                var payload = await _googleAuthService.VerifyGoogleTokenAsync(idToken);
+
+                var email = payload.Email;
+                var name = payload.Name;
+                var googleId = payload.Subject;
+
+                // TODO: Check or create user in your DB
+
+                var appToken = _jwtService.GenerateToken(email, googleId, "1");
+
+                return Ok(new { token = appToken, email, name });
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(new ApiResponseDTO<object>
+                {
+                    Success = false,
+                    Message = "Invalid Google Token."
+                });
+            }
+        }
         #endregion
 
         #region Forgot Password

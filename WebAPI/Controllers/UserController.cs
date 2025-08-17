@@ -25,12 +25,20 @@ namespace WebAPI.Controllers
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDTO registerRequest)
         {
-            if (_userService.IsUserExists(registerRequest.Email).GetAwaiter().GetResult())
+            if (_userService.IsUserExists(1, registerRequest.Email).GetAwaiter().GetResult())
             {
                 return BadRequest(new ApiResponseDTO<object>
                 {
                     Success = false,
                     Message = "Email already exists"
+                });
+            }
+            if (_userService.IsUserExists(2, registerRequest.Username).GetAwaiter().GetResult())
+            {
+                return BadRequest(new ApiResponseDTO<object>
+                {
+                    Success = false,
+                    Message = "Username already exists"
                 });
             }
             await _userService.RegisterAsync(registerRequest);
