@@ -94,7 +94,7 @@ namespace WebAPI.Controllers
             }
             DailyCupTracking request = requestDTO.Adapt<DailyCupTracking>();
             var isSuccess = await _service.CreateAsync(request);
-            if (!isSuccess.Equals(null))
+            if (isSuccess.Equals(null))
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponseDTO<object>
                 {
@@ -118,6 +118,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] DailyCupTrackingRequestDTO requestDTO)
         {
             DailyCupTracking request = requestDTO.Adapt<DailyCupTracking>();
+            request.TrackingId = id;
             await _service.UpdateAsync(request);
 
             return Ok(new { success = true });

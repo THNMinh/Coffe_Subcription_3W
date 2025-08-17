@@ -93,7 +93,7 @@ namespace WebAPI.Controllers
             }
             SubscriptionTimeWindow request = requestDTO.Adapt<SubscriptionTimeWindow>();
             var isSuccess = await _service.CreateAsync(request);
-            if (!isSuccess.Equals(null))
+            if (isSuccess.Equals(null))
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponseDTO<object>
                 {
@@ -117,6 +117,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] SubscriptionTimeWindowRequestDTO requestDTO)
         {
             SubscriptionTimeWindow request = requestDTO.Adapt<SubscriptionTimeWindow>();
+            request.WindowId = id;
             await _service.UpdateAsync(request);
 
             return Ok(new { success = true });
