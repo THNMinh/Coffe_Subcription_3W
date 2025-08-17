@@ -28,9 +28,20 @@ namespace Core.Extensions
             services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
             services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
             services.AddScoped<ICoffeeItemRepository, CoffeeItemRepository>();
+
             //-----------------DailyCupTracking-----------------
             services.AddScoped<IDailyCupTrackingRepository, DailyCupTrackingRepository>();
             services.AddScoped<IDailyCupTrackingService, DailyCupTrackingService>();
+
+            //-----------------SubscriptionPlan-----------------
+            services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
+            services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
+
+            //-----------------SubscriptionTimeWindow-----------------
+            services.AddScoped<ISubscriptionTimeWindowRepository, SubscriptionTimeWindowRepository>();
+            services.AddScoped<ISubscriptionTimeWindowService, SubscriptionTimeWindowService>();
+
+
         }
     }
 }
