@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Core.Interfaces.Services;
 using Core.Models;
 using Mapster;
+using Core.DTOs.Request;
 
 namespace WebAPI.Controllers
 {
@@ -76,7 +77,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Create([FromBody] DailyCupTrackingDTO requestDTO)
+        public async Task<IActionResult> Create([FromBody] DailyCupTrackingRequestDTO requestDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -114,7 +115,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update(int id, [FromBody] DailyCupTrackingDTO requestDTO)
+        public async Task<IActionResult> Update(int id, [FromBody] DailyCupTrackingRequestDTO requestDTO)
         {
             DailyCupTracking request = requestDTO.Adapt<DailyCupTracking>();
             await _service.UpdateAsync(request);
