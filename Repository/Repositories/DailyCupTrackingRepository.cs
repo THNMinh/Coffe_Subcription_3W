@@ -7,6 +7,7 @@ using Core.DTOs;
 using Core.Interfaces.Repositories;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace Repository.Repositories
 {
@@ -17,5 +18,27 @@ namespace Repository.Repositories
         {
             _context = context;
         }
+
+        //public async Task<bool> ExistsAsync(int subscriptionId, DateTime date)
+        //{
+        //    return await _context.DailyCupTrackings
+        //        .AnyAsync(d => d.SubscriptionId == subscriptionId &&
+        //                       d.Date.ToDateTime(TimeOnly.MinValue) == date);
+        //}
+
+        public async Task<bool> ExistsAsync(int subscriptionId, DateTime date)
+        {
+            return _context.DailyCupTrackings
+                .AsEnumerable()
+                .Any(d => d.SubscriptionId == subscriptionId && d.Date.ToDateTime(TimeOnly.MinValue) == date);
+        }
+
+        public async Task CreateAsync(DailyCupTracking tracking)
+        {
+            await _context.DailyCupTrackings.AddAsync(tracking);
+            await _context.SaveChangesAsync();
+        }
+
+
     }
 }

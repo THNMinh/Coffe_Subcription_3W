@@ -24,6 +24,10 @@ namespace Core.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IEmailService, EmailService>();
 
+            services.AddScoped<IUserSubcriptionRepository, UserSubcriptionRepository>();
+            services.AddScoped<IUserSubcriptionService, UserSubcriptionService>();
+            services.AddHostedService<DailyTrackingBackgroundService>();
+
 
             services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
             services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
