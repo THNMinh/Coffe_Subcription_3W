@@ -81,7 +81,7 @@ builder.Services.AddAuthentication(options =>
          };
      });
 #endregion
-var clientId = builder.Configuration["Authentication:Google:ClientId"];
+var clientId = builder.Configuration["GOOGLE_CLIENTID"];
 
 // Add services to the container.
 
