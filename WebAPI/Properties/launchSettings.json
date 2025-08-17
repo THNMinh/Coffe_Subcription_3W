@@ -13,7 +13,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "SMTP_PASSWORD": "pcgw tanh mmtm xvdn",
-        "Authentication:Google:ClientId": "998234419612-qa7oprsiasf64o6uh0drbv3ls0u7uijs.apps.googleusercontent.com"
+        "GOOGLE_CLIENTID": "998234419612-qa7oprsiasf64o6uh0drbv3ls0u7uijs.apps.googleusercontent.com"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7222;http://localhost:5078"
