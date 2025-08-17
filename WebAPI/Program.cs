@@ -80,6 +80,8 @@ builder.Services.AddAuthentication(options =>
          };
      });
 #endregion
+var clientId = builder.Configuration["Authentication:Google:ClientId"];
+
 // Add services to the container.
 
 // Add VNPAY service to the container.

@@ -69,9 +69,13 @@ namespace Service.Services
             return user;
         }
 
-        public async Task<bool> IsUserExists(string email)
+        public async Task<bool> IsUserExists(int type, string request)
         {
-            var user = await _userRepository.GetAsync(user => user.Email == email);
+            var user = await _userRepository.GetAsync(u =>
+                (type == 1 && u.Email == request) || 
+                (type == 2 && u.Username == request)
+            );
+
             return user != null;
         }
 

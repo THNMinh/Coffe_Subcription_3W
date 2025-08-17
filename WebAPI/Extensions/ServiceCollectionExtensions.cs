@@ -28,6 +28,8 @@ namespace Core.Extensions
             services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
             services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
             services.AddScoped<ICoffeeItemRepository, CoffeeItemRepository>();
+            //-----------------GoogleAuth-----------------
+            services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 
             //-----------------DailyCupTracking-----------------
             services.AddScoped<IDailyCupTrackingRepository, DailyCupTrackingRepository>();
