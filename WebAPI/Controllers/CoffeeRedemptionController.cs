@@ -16,16 +16,8 @@ namespace WebAPI.Controllers
         [HttpPost("/api/EnterCafeCode")]
         public async Task<IActionResult> Create(int subscriptionId, string coffeeCode)
         {
-
-
            var createdSub = await _service.ProcessRedemptionAsync(subscriptionId, coffeeCode);
-
-
-
-
-
             return Ok(createdSub);
-
         }
 
     }

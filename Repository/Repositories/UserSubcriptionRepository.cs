@@ -36,7 +36,7 @@ namespace Repository.Repositories
                 .FirstOrDefaultAsync(us =>
                     us.SubscriptionId == subscriptionId &&
                     us.IsActive &&
-                    us.EndDate >= DateTime.Today &&
+                    us.EndDate >= DateTime.UtcNow.Date &&
                     us.RemainingCups > 0);
         }
 

@@ -38,7 +38,8 @@ namespace Service.Services
 
         public async Task<CoffeeRedemptionResult> ProcessRedemptionAsync(int subscriptionId, string coffeeCode)
         {
-            var redemptionTime = DateTime.Now;
+            //var redemptionTime = DateTime.Now;
+            var redemptionTime = DateTime.UtcNow;
             var result = new CoffeeRedemptionResult();
 
             try
