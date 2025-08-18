@@ -17,6 +17,5 @@ namespace Core.DTOs
 
         public int CupsTaken { get; set; }
 
-        public virtual UserSubscription Subscription { get; set; } = null!;
     }
 }

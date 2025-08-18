@@ -35,10 +35,16 @@ namespace Service.Services
         {
             // Hash the password
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(requestDTO.Password);
-
+            var maxId = await _userRepository.GetAllAsync();
+            int newId = 1;
+            if (maxId.Any())
+            {
+                newId = maxId.Max(u => u.Id) + 1;
+            }
             // Create the user and save to the database
             var newUser = new User
             {
+                Id = newId,
                 Email = requestDTO.Email,
                 PasswordHash = hashedPassword,
                 Username = requestDTO.Username,
@@ -69,9 +75,13 @@ namespace Service.Services
             return user;
         }
 
-        public async Task<bool> IsUserExists(string email)
+        public async Task<bool> IsUserExists(int type, string request)
         {
-            var user = await _userRepository.GetAsync(user => user.Email == email);
+            var user = await _userRepository.GetAsync(u =>
+                (type == 1 && u.Email == request) || 
+                (type == 2 && u.Username == request)
+            );
+
             return user != null;
         }
 

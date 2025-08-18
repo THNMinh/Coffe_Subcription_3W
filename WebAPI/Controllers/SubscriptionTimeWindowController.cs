@@ -1,10 +1,9 @@
 ﻿using Core.DTOs.Response;
 using Core.DTOs;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Core.Interfaces.Services;
 using Core.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Mapster;
 using Core.DTOs.Request;
 
@@ -12,18 +11,18 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DailyCupTrackingController : ControllerBase
+    public class SubscriptionTimeWindowController : ControllerBase
     {
-        private readonly IDailyCupTrackingService _service;
+        private readonly ISubscriptionTimeWindowService _service;
 
-        public DailyCupTrackingController(IDailyCupTrackingService service)
+        public SubscriptionTimeWindowController(ISubscriptionTimeWindowService service)
         {
             _service = service;
         }
         #region Get All
 
         [HttpPost("getAll")]
-        [ProducesResponseType(typeof(ApiResponseDTO<DailyCupTrackingDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseDTO<SubscriptionTimeWindowDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAll()
         {
@@ -41,12 +40,12 @@ namespace WebAPI.Controllers
                 });
             }
 
-            var trackings = await _service.GetAllDailyCupTrackingsAsync();
+            var times = await _service.GetAllSubscriptionTimeWindowsAsync();
 
-            return Ok(new ApiResponseDTO<List<DailyCupTrackingDTO>>
+            return Ok(new ApiResponseDTO<List<SubscriptionTimeWindowDTO>>
             {
                 Success = true,
-                Data = trackings
+                Data = times
             });
         }
 
@@ -55,17 +54,17 @@ namespace WebAPI.Controllers
         #region Get
 
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(ApiResponseDTO<DailyCupTrackingDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseDTO<SubscriptionTimeWindowDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(int id)
         {
-            var tracking = await _service.GetByIdAsync(id);
-            if (tracking == null)
+            var time = await _service.GetByIdAsync(id);
+            if (time == null)
             {
-                return NotFound(new ApiResponseDTO<object>() { Success = false, Message = "Daily Cup Tracking not found" });
+                return NotFound(new ApiResponseDTO<object>() { Success = false, Message = "Time not found" });
             }
-            return Ok(new ApiResponseDTO<DailyCupTrackingDTO>() { Success = true, Data = tracking });
+            return Ok(new ApiResponseDTO<SubscriptionTimeWindowDTO>() { Success = true, Data = time });
         }
 
         #endregion
@@ -77,7 +76,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Create([FromBody] DailyCupTrackingRequestDTO requestDTO)
+        public async Task<IActionResult> Create([FromBody] SubscriptionTimeWindowRequestDTO requestDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -92,14 +91,14 @@ namespace WebAPI.Controllers
                     }).ToList()
                 });
             }
-            DailyCupTracking request = requestDTO.Adapt<DailyCupTracking>();
+            SubscriptionTimeWindow request = requestDTO.Adapt<SubscriptionTimeWindow>();
             var isSuccess = await _service.CreateAsync(request);
             if (isSuccess.Equals(null))
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponseDTO<object>
                 {
                     Success = false,
-                    Message = "Failed to create Daily Cup Tracking"
+                    Message = "Failed to create Subscription Time Window"
                 });
             }
 
@@ -115,10 +114,10 @@ namespace WebAPI.Controllers
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update(int id, [FromBody] DailyCupTrackingRequestDTO requestDTO)
+        public async Task<IActionResult> Update(int id, [FromBody] SubscriptionTimeWindowRequestDTO requestDTO)
         {
-            DailyCupTracking request = requestDTO.Adapt<DailyCupTracking>();
-            request.TrackingId = id;
+            SubscriptionTimeWindow request = requestDTO.Adapt<SubscriptionTimeWindow>();
+            request.WindowId = id;
             await _service.UpdateAsync(request);
 
             return Ok(new { success = true });
@@ -142,7 +141,7 @@ namespace WebAPI.Controllers
                 return NotFound(new ApiResponseDTO<object>
                 {
                     Success = false,
-                    Message = "Daily Cup not found"
+                    Message = "Subscription Time Window not found"
                 });
             }
 
