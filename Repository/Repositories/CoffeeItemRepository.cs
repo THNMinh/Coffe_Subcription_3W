@@ -1,5 +1,6 @@
 ﻿using Core.Interfaces.Repositories;
 using Core.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,22 @@ namespace Repository.Repositories
         public CoffeeItemRepository(CoffeSubContext context) : base(context)
         {
             _context = context;
+        }
+
+        public async Task<int?> GetCoffeeIdByCodeAsync(string code)
+        {
+            return await _context.CoffeeItems
+                .Where(ci => ci.Code == code && ci.IsActive)
+                .Select(ci => (int?)ci.CoffeeId) // Cast to nullable int
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<CoffeeItem?> GetByCodeAsync(string code)
+        {
+            return await _context.CoffeeItems
+                .FirstOrDefaultAsync(ci =>
+                    ci.Code == code &&
+                    ci.IsActive);
         }
 
     }

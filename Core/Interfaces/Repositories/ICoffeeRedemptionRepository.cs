@@ -8,11 +8,7 @@ using System.Threading.Tasks;
 
 namespace Core.Interfaces.Repositories
 {
-    public interface ICoffeeItemRepository : IGenericRepository<CoffeeItem, int>
+    public interface ICoffeeRedemptionRepository : IGenericRepository<CoffeeRedemption, int>
     {
-        public Task<int?> GetCoffeeIdByCodeAsync(string code);
-
-        Task<CoffeeItem?> GetByCodeAsync(string code);
-
     }
 }

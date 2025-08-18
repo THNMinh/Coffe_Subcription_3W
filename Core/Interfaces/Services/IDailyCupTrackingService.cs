@@ -19,5 +19,10 @@ namespace Core.Interfaces.Services
         Task<bool> UpdateAsync(DailyCupTracking tracking);
 
         Task<bool> DeleteAsync(int id);
-     }
+
+
+
+        Task<DailyCupTracking> GetOrCreateDailyTrackingAsync(int subscriptionId, DateOnly date);
+        Task IncrementUsageAsync(int trackingId);
+    }
 }

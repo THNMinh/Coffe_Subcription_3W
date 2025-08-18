@@ -6,6 +6,7 @@ using Core.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Repository.Repositories;
 using System;
 using System.Collections.Generic;
@@ -20,12 +21,14 @@ namespace Service.Services
         private readonly IDailyCupTrackingRepository _repo;
         private readonly CoffeSubContext _context;
         private readonly IUserSubcriptionRepository _userSubscriptionRepository;
+        private readonly ILogger<DailyCupTrackingService> _logger;
 
-        public DailyCupTrackingService(IDailyCupTrackingRepository repo, CoffeSubContext context, IUserSubcriptionRepository userSubscriptionRepository)
+        public DailyCupTrackingService(IDailyCupTrackingRepository repo, CoffeSubContext context, IUserSubcriptionRepository userSubscriptionRepository, ILogger<DailyCupTrackingService> logger)
         {
             _repo = repo;
             _context = context;
             _userSubscriptionRepository = userSubscriptionRepository;
+            _logger = logger;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -66,7 +69,51 @@ namespace Service.Services
             }
         }
 
-        
+        public async Task<DailyCupTracking> GetOrCreateDailyTrackingAsync(int subscriptionId, DateOnly date)
+        {
+            var tracking = await _context.DailyCupTrackings
+                .FirstOrDefaultAsync(d =>
+                    d.SubscriptionId == subscriptionId &&
+                    d.Date == date);
+
+            if (tracking == null)
+            {
+                //var subscription = await _context.UserSubscriptions
+                //    .Include(us => us.Plan)
+                //    .FirstOrDefaultAsync(us => us.SubscriptionId == subscriptionId);
+
+                //if (subscription == null)
+                //    throw new ArgumentException("Invalid subscription ID");
+
+                tracking = new DailyCupTracking
+                {
+                    SubscriptionId = subscriptionId,
+                    Date = date,
+                    CupsTaken = 0,
+                    //DailyLimit = subscription.Plan.DailyCupLimit
+                };
+
+                _context.DailyCupTrackings.Add(tracking);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Created new daily tracking for subscription {SubscriptionId}", subscriptionId);
+            }
+
+            return tracking;
+        }
+
+        public async Task IncrementUsageAsync(int trackingId)
+        {
+            var tracking = await _context.DailyCupTrackings
+                .FirstOrDefaultAsync(d => d.TrackingId == trackingId);
+
+            if (tracking != null)
+            {
+                tracking.CupsTaken++;
+                await _context.SaveChangesAsync();
+            }
+        }
+
+
 
         public async Task<List<DailyCupTrackingDTO>> GetAllDailyCupTrackingsAsync()
         {

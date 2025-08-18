@@ -35,6 +35,10 @@ namespace Core.Extensions
             //-----------------DailyCupTracking-----------------
             services.AddScoped<IDailyCupTrackingRepository, DailyCupTrackingRepository>();
             services.AddScoped<IDailyCupTrackingService, DailyCupTrackingService>();
+
+            //-----------------CoffeeRedemption-----------------
+            services.AddScoped<ICoffeeRedemptionRepository, CoffeeRedemptionRepository>();
+            services.AddScoped<ICoffeeRedemptionService, CoffeeRedemptionService>();
         }
     }
 }
