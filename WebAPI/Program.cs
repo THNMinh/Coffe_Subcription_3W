@@ -1,6 +1,8 @@
+﻿using AutoMapper;
 using Core.Extensions;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.MappingProfile;
 using  Core.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -136,6 +138,16 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.Register();
 //builder.Services.RegisterMapsterConfiguration();
+
+
+var mapperConfig = new MapperConfiguration(cfg =>
+{
+    cfg.AddProfile<UserSubcriptionProfile>();
+
+});
+
+IMapper mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 var app = builder.Build();
 

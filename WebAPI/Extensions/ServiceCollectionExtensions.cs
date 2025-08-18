@@ -24,6 +24,10 @@ namespace Core.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IEmailService, EmailService>();
 
+            services.AddScoped<IUserSubcriptionRepository, UserSubcriptionRepository>();
+            services.AddScoped<IUserSubcriptionService, UserSubcriptionService>();
+            services.AddHostedService<DailyTrackingBackgroundService>();
+
 
             services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
             services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
@@ -35,6 +39,10 @@ namespace Core.Extensions
             services.AddScoped<IDailyCupTrackingRepository, DailyCupTrackingRepository>();
             services.AddScoped<IDailyCupTrackingService, DailyCupTrackingService>();
 
+            //-----------------CoffeeRedemption-----------------
+            services.AddScoped<ICoffeeRedemptionRepository, CoffeeRedemptionRepository>();
+            services.AddScoped<ICoffeeRedemptionService, CoffeeRedemptionService>();
+          
             //-----------------SubscriptionPlan-----------------
             services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
             services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
