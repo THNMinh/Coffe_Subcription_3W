@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Core.DTOs.CoffeeItemDTO;
+using Core.DTOs.Request;
 using Core.DTOs.UserSubscriptionDTO;
 using Core.Models;
 using System;
@@ -16,6 +17,8 @@ namespace Core.MappingProfile
         {
             CreateMap<CoffeeItem, CoffeeItemResponseDto>();
             CreateMap<CreateCoffeeItemDto, CoffeeItem>();
+            CreateMap<CoffeeItemRequestDto, CoffeeItem>()
+           .ForMember(dest => dest.ImageUrl, opt => opt.Ignore());
         }
     }
 }

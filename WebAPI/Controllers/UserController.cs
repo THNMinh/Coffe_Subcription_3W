@@ -83,9 +83,9 @@ namespace WebAPI.Controllers
         [ProducesResponseType(typeof(ApiResponseDTO<UserDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetUser(int userId)
+        public async Task<IActionResult> GetUser(int Id)
         {
-            if (userId == 0 || userId == null)
+            if (Id == 0 || Id == null)
             {
                 return BadRequest(new ApiResponseDTO<object>
                 {
@@ -93,7 +93,7 @@ namespace WebAPI.Controllers
                     Message = "Invalid user ID"
                 });
             }
-            var user = await _userService.FindByIdAsync(userId);
+            var user = await _userService.FindByIdAsync(Id);
 
             if (user == null)
             {
