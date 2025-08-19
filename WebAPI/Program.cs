@@ -88,7 +88,8 @@ var clientId = builder.Configuration["GOOGLE_CLIENTID"];
 // Add services to the container.
 
 // Add VNPAY service to the container.
-builder.Services.AddSingleton<IVnpay, Vnpay>();
+//builder.Services.AddSingleton<IVnpay, Vnpay>();
+builder.Services.AddScoped<IVnpay, Vnpay>();
 builder.Services.AddHttpContextAccessor();
 
 
@@ -143,6 +144,7 @@ builder.Services.Register();
 var mapperConfig = new MapperConfiguration(cfg =>
 {
     cfg.AddProfile<UserSubcriptionProfile>();
+    cfg.AddProfile<CoffeeItemProfile>();
 
 });
 

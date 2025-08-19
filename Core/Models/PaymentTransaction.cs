@@ -17,7 +17,7 @@ public partial class PaymentTransaction
 
     public string? TransactionNo { get; set; }
 
-    public string? PaymentTime { get; set; }
+    public DateTime? PaymentTime { get; set; }
 
     public string? TransactionStatus { get; set; }
 

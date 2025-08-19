@@ -41,6 +41,7 @@ namespace VNPAY
         /// </summary>
         /// <param name="collections">Thông tin các tham số trả về từ VNPAY qua callback.</param>
         /// <returns></returns>
-        PaymentResult GetPaymentResult(IQueryCollection parameters);
+        //PaymentResult GetPaymentResultAsync(IQueryCollection parameters);
+        Task<PaymentResult> GetPaymentResultAsync(IQueryCollection parameters);
     }
 }

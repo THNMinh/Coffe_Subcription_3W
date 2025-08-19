@@ -1,4 +1,5 @@
 ﻿using Core.Interfaces.Repositories;
+using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using VNPAY;
 using VNPAY.Enums;
@@ -14,8 +15,9 @@ namespace Backend_API_Testing.Controllers
         private readonly IVnpay _vnpay;
         private readonly IConfiguration _configuration;
         private readonly ISubscriptionPlanRepository _subscriptionPlanRepository;
+        private readonly IPaymentTransactionRepository _paymentTransactionRepository;
 
-        public VnpayController(IVnpay vnPayservice, IConfiguration configuration, ISubscriptionPlanRepository subscriptionPlanRepository)
+        public VnpayController(IVnpay vnPayservice, IConfiguration configuration, ISubscriptionPlanRepository subscriptionPlanRepository, IPaymentTransactionRepository paymentTransactionRepository)
         {
             _vnpay = vnPayservice;
             _configuration = configuration;
@@ -23,6 +25,7 @@ namespace Backend_API_Testing.Controllers
             _vnpay.Initialize(_configuration["Vnpay:TmnCode"], _configuration["Vnpay:HashSecret"], _configuration["Vnpay:BaseUrl"], _configuration["Vnpay:CallbackUrl"]);
 
             _subscriptionPlanRepository = subscriptionPlanRepository;
+            _paymentTransactionRepository = paymentTransactionRepository;
         }
 
         /// <summary>
@@ -32,7 +35,7 @@ namespace Backend_API_Testing.Controllers
         /// <param name="description">Mô tả giao dịch</param>
         /// <returns></returns>
         [HttpGet("CreatePaymentUrl")]
-        public async Task<ActionResult<string>> CreatePaymentUrlAsync(int planId, string description)
+        public async Task<ActionResult<string>> CreatePaymentUrlAsync(int planId, int userId) // Change userId type to int
         {
             try
             {
@@ -41,15 +44,30 @@ namespace Backend_API_Testing.Controllers
 
                 var request = new PaymentRequest
                 {
-                    PaymentId = DateTime.Now.Ticks,
+                    PaymentId = DateTime.UtcNow.Ticks,
                     Money = (double)subPlan.Price,
-                    Description = description,
+                    Description = "Purchase plan",
                     IpAddress = ipAddress,
                     BankCode = BankCode.ANY, // Tùy chọn. Mặc định là tất cả phương thức giao dịch
-                    CreatedDate = DateTime.Now, // Tùy chọn. Mặc định là thời điểm hiện tại
+                    CreatedDate = DateTime.UtcNow, // Tùy chọn. Mặc định là thời điểm hiện tại
                     Currency = Currency.VND, // Tùy chọn. Mặc định là VND (Việt Nam đồng)
                     Language = DisplayLanguage.Vietnamese // Tùy chọn. Mặc định là tiếng Việt
                 };
+
+                await _paymentTransactionRepository.CreateAsync(new PaymentTransaction
+                {
+                    UserId = userId, // Change userId type to int to match PaymentTransaction.UserId
+                    Amount = subPlan.Price,
+                    Currency = Currency.VND.ToString(),
+                    OrderId = planId.ToString(),
+                    TransactionNo = request.PaymentId.ToString(),
+                    PaymentTime = DateTime.UtcNow,
+                    TransactionStatus = null,
+                    BankCode = BankCode.ANY.ToString(),
+                    CardType = "VNPAY",
+                    CreatedAt = DateTime.UtcNow,
+                    IpAddress = ipAddress,
+                });
 
                 var paymentUrl = _vnpay.GetPaymentUrl(request);
 
@@ -66,16 +84,15 @@ namespace Backend_API_Testing.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("IpnAction")]
-        public IActionResult IpnAction()
+        public async Task<IActionResult> IpnAction()
         {
             if (Request.QueryString.HasValue)
             {
                 try
                 {
-                    var paymentResult = _vnpay.GetPaymentResult(Request.Query);
+                    var paymentResult = await _vnpay.GetPaymentResultAsync(Request.Query); // Await the Task to get the PaymentResult object
                     if (paymentResult.IsSuccess)
                     {
-                        // Thực hiện hành động nếu thanh toán thành công tại đây. Ví dụ: Cập nhật trạng thái đơn hàng trong cơ sở dữ liệu.
                         return Ok();
                     }
 
@@ -96,13 +113,13 @@ namespace Backend_API_Testing.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("Callback")]
-        public ActionResult<PaymentResult> Callback()
+        public async Task<ActionResult<PaymentResult>> Callback()
         {
             if (Request.QueryString.HasValue)
             {
                 try
                 {
-                    var paymentResult = _vnpay.GetPaymentResult(Request.Query);
+                    var paymentResult = await _vnpay.GetPaymentResultAsync(Request.Query); // Await the Task to get the PaymentResult object
 
                     if (paymentResult.IsSuccess)
                     {

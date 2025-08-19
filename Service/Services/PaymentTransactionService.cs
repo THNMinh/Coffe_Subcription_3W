@@ -48,5 +48,12 @@ namespace Service.Services
             await _paymentTransactionRepository.UpdateAsync(transaction);
             return true;
         }
+
+        public async Task<PaymentTransaction?> GetByOrderIdAsync(string id)
+        {
+            return await _paymentTransactionRepository.GetByOrderIdAsync(id);
+
+        }
+
     }
 }

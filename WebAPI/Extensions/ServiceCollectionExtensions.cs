@@ -20,24 +20,31 @@ namespace Core.Extensions
             services.AddHttpContextAccessor();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IJwtService, JwtService>();
+
+            //-----------------User-----------------
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IEmailService, EmailService>();
 
+            //-----------------UserSubcription-----------------
             services.AddScoped<IUserSubcriptionRepository, UserSubcriptionRepository>();
             services.AddScoped<IUserSubcriptionService, UserSubcriptionService>();
-            services.AddHostedService<DailyTrackingBackgroundService>();
 
-
+            //-----------------SubscriptionPlan-----------------
             services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
             services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
+
+            //-----------------CoffeeItem-----------------
             services.AddScoped<ICoffeeItemRepository, CoffeeItemRepository>();
+            services.AddScoped<ICoffeeItemService, CoffeeItemService>();
+
             //-----------------GoogleAuth-----------------
             services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 
             //-----------------DailyCupTracking-----------------
             services.AddScoped<IDailyCupTrackingRepository, DailyCupTrackingRepository>();
             services.AddScoped<IDailyCupTrackingService, DailyCupTrackingService>();
+            services.AddHostedService<DailyTrackingBackgroundService>();
 
             //-----------------CoffeeRedemption-----------------
             services.AddScoped<ICoffeeRedemptionRepository, CoffeeRedemptionRepository>();
@@ -51,6 +58,10 @@ namespace Core.Extensions
             services.AddScoped<ISubscriptionTimeWindowRepository, SubscriptionTimeWindowRepository>();
             services.AddScoped<ISubscriptionTimeWindowService, SubscriptionTimeWindowService>();
 
+
+            //-----------------PaymentTransaction-----------------
+            services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
+            services.AddScoped<IPaymentTransactionService, PaymentTransactionService>();
 
         }
     }

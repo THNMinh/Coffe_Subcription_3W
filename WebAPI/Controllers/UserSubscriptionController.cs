@@ -53,8 +53,8 @@ namespace WebAPI.Controllers
 
             var createdSubresponse = _mapper.Map<UserSubscriptionResponseDto>(createdSub);
 
-            var services = HttpContext.RequestServices;
-            var logger = services.GetRequiredService<ILogger<DailyTrackingBackgroundService>>();
+            //var services = HttpContext.RequestServices;
+            //var logger = services.GetRequiredService<ILogger<DailyTrackingBackgroundService>>();
 
             //var testService = new DailyTrackingBackgroundService(
             //    services,

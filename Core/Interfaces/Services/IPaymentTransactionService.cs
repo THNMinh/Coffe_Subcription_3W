@@ -17,5 +17,8 @@ namespace Core.Interfaces.Services
         Task<bool> UpdateAsync(PaymentTransaction transaction);
 
         Task<bool> DeleteAsync(int id);
+
+        Task<PaymentTransaction?> GetByOrderIdAsync(string id);
+
     }
 }
