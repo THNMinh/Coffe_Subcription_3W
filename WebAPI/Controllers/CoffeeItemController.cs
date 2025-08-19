@@ -120,7 +120,7 @@ namespace WebAPI.Controllers
             if (request.File == null || request.File.Length == 0)
                 return BadRequest("No file uploaded.");
 
-            var url = await _cloudinaryService.UploadImageAsync(request.File, "my_app/images");
+            var url = await _cloudinaryService.UploadImageAsync(request.File, "coffee_sub/images");
             return Ok(new { imageUrl = url });
         }
     }
