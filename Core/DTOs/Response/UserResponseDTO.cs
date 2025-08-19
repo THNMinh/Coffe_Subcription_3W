@@ -5,12 +5,11 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Core.DTOs
+namespace Core.DTOs.Response
 {
-    public class UserDTO
+    public class UserResponseDTO
     {
         public int Id { get; set; }
-
         public string Username { get; set; } = null!;
 
         public string PasswordHash { get; set; } = null!;
@@ -27,7 +26,7 @@ namespace Core.DTOs
         [JsonPropertyName("updatedAt")]
         public DateTime UpdatedAt { get; set; }
 
-        public string Role {  get; set; }  
+        public string Role { get; set; }
 
         public bool IsActive { get; set; }
     }

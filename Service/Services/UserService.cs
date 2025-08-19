@@ -14,6 +14,7 @@ using Core.Interfaces.Repositories;
 using Microsoft.AspNetCore.Http;
 using Mapster;
 using Core.Interfaces.Services;
+using Core.DTOs.Response;
 
 namespace Service.Services
 {
@@ -55,12 +56,12 @@ namespace Service.Services
                 UpdatedAt = DateTime.UtcNow,
                 IsActive = true
             };
-            await _userRepository.AddAsync(newUser);
+            await _userRepository.CreateAsync(newUser);
         }
 
         public async Task<User?> AuthenticateUserAsync(string email, string password)
         {
-            var user = await _userRepository.GetAsync(user => user.Email == email);
+            var user = await _userRepository.GetByEmailAsync(email);
             if (user == null)
             {
                 // User with the given email doesn't exist
@@ -97,14 +98,13 @@ namespace Service.Services
 
         public async Task<bool> UpdatePassword(UserDTO userDTO, string password)
         {
-            var user = await _userRepository.GetAsync(userDTO.UserId);
+            var user = await _userRepository.GetAsync(user => user.Id == userDTO.Id);
             if (user == null)
             {
                 return false;
             }
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password); // Update with a hashed password
-            user.UpdatedAt = DateTime.Now;
-            return _userRepository.Update(user);
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
+            return await _userRepository.UpdatePassword(user);
         }
 
         public string GenerateRandomPassword()
@@ -138,7 +138,7 @@ namespace Service.Services
 
         public async Task<UserDTO?> FindByIdAsync(int id)
         {
-            var user = await _userRepository.GetAsync(id);
+            var user = await _userRepository.GetByIdAsync(id);
             if (user == null)
             {
                 return null;
@@ -148,7 +148,7 @@ namespace Service.Services
 
         public async Task<bool> VerifyPassword(UserDTO userDTO, string oldPassword)
         {
-            var user = await _userRepository.GetAsync(userDTO.UserId);
+            var user = await _userRepository.GetByIdAsync(userDTO.Id);
             if (user == null)
             {
                 return false;
@@ -156,87 +156,30 @@ namespace Service.Services
             return BCrypt.Net.BCrypt.Verify(oldPassword, user.PasswordHash);
         }
 
-        //public async Task<(List<UserDTO>, int totalItems)> GetUsersAsync(SearchCondition searchCondition, PageInfoRequest pageInfo)
-        //{
-        //    // Start with a base filter that is always true
-        //    Expression<Func<User, bool>> filter = u => true;
+        public async Task<List<UserResponseDTO>> GetUsersAsync()
+        {
+            var users = await _userRepository.GetAllAsync();
+            //int totalItems = await _userRepository.CountAsync();
+            List<UserResponseDTO> userDTOs = users.Select(user => user.Adapt<UserResponseDTO>()).ToList();
+            return userDTOs;
+        }
 
-        //    // Apply filters dynamically
-        //    if (!string.IsNullOrEmpty(searchCondition.Keyword))
-        //    {
-        //        string keyword = searchCondition.Keyword.ToLower();
-        //        filter = AddFilter(filter, u =>
-        //            (u.Name != null && u.Name.ToLower().Contains(keyword)) ||
-        //            u.Email.ToLower().Contains(keyword));
-        //    }
-        //    if (!string.IsNullOrEmpty(searchCondition.Role))
-        //    {
-        //        var role = Enum<RoleEnum>.Parse(searchCondition.Role);
-        //        filter = AddFilter(filter, u => u.Role == role);
-        //    }
+        public async Task<bool> UpdateAsync(UserDTO userDTO)
+        {
+            User user = new User();
+            user.Adapt<UserDTO>();
+            return await _userRepository.UpdateAsync(user);
+        }
 
+        public async Task<bool> ChangeUserActive(int id, bool active)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user == null) return false;
 
-        //    filter = AddFilter(filter, u => u.Status == searchCondition.Status && u.IsDeleted == searchCondition.IsDeleted);
-
-        //    var users = await _userRepository.GetWithPaginationAsync(pageInfo, filter);
-        //    int totalItems = await _userRepository.CountAsync(filter);
-
-        //    List<UserDTO> userDTOs = users.Select(user => user.Adapt<UserDTO>()).ToList();
-
-        //    return (userDTOs, totalItems);
-        //}
-
-        //private Expression<Func<User, bool>> AddFilter(
-        //    Expression<Func<User, bool>> existingFilter,
-        //    Expression<Func<User, bool>> newFilter)
-        //{
-        //    var parameter = Expression.Parameter(typeof(User), "u");
-
-        //    var combined = Expression.Lambda<Func<User, bool>>(
-        //        Expression.AndAlso(
-        //            Expression.Invoke(existingFilter, parameter),
-        //            Expression.Invoke(newFilter, parameter)
-        //        ),
-        //        parameter
-        //    );
-
-        //    return combined;
-        //}
-
-        //public async Task<bool> ChangeUserStatusAsync(ChangeUserStatusRequestDTO requestDTO)
-        //{
-        //    // Retrieve the user by ID
-        //    var user = await _userRepository.GetAsync(Guid.Parse(requestDTO.UserId));
-        //    if (user == null) return false; // User not found
-
-        //    // Check if the new status is different from the old status
-        //    if (user.Status == requestDTO.Status.Value) return false;
-
-        //    // Update the user status
-        //    user.Status = requestDTO.Status ?? false;
-        //    user.UpdatedDate = DateTime.Now;
-        //    return _userRepository.Update(user);
-        //}
-
-        //public async Task<bool> DeleteUserAsync(int userId)
-        //{
-        //    var currentUserId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        //    if (int.Parse(currentUserId) == userId) throw new BusinessException(ErrorDetails.CAN_NOT_DELETE_YOURSELF);
-        //    var user = await _userRepository.GetAsync(userId);
-        //    if (user == null) return false; // User not found
-
-        //    user.IsDeleted = true;
-        //    return _userRepository.Update(user);
-        //}
-
-        //public async Task<bool> UpdateRoleAsync(UpdateRoleRequestDTO changeUserStatusDTO)
-        //{
-        //    var user = await _userRepository.GetAsync(Guid.Parse(changeUserStatusDTO.UserId));
-        //    if (user == null) return false; // User not found
-
-        //    user.Role = Enum<RoleEnum>.Parse(changeUserStatusDTO.Role);
-        //    user.UpdatedDate = DateTime.Now;
-        //    return _userRepository.Update(user);
-        //}
+            user.IsActive = active;
+            user.UpdatedAt = DateTime.UtcNow;
+            user.CreatedAt = DateTime.SpecifyKind(user.CreatedAt, DateTimeKind.Utc);
+            return await _userRepository.UpdateAsync(user);
+        }
     }
 }

@@ -146,7 +146,7 @@ namespace WebAPI.Controllers
         #region Get Current User
 
         [Authorize]
-        [HttpGet]
+        [HttpGet("current-logged-user")]
         [ProducesResponseType(typeof(ApiResponseDTO<UserDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetCurrentUser()

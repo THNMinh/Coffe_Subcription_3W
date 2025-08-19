@@ -5,6 +5,8 @@ using Core.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Core.Models;
+using Mapster;
 
 namespace WebAPI.Controllers
 {
@@ -50,6 +52,81 @@ namespace WebAPI.Controllers
             });
         }
 
+        #endregion
+
+        #region Get Users
+
+        //[Authorize(Roles = "manager")]
+        [HttpPost("getAll")]
+        [ProducesResponseType(typeof(ApiResponseDTO<List<UserResponseDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetUsers()
+        {
+
+            var users = await _userService.GetUsersAsync();
+
+            return Ok(new ApiResponseDTO<List<UserResponseDTO>>
+            {
+                Success = true,
+                Data = users
+            });
+        }
+
+        #endregion
+
+        #region Get User
+        [HttpGet("{Id}")]
+        //[Authorize(Roles = "manager")]
+        [ProducesResponseType(typeof(ApiResponseDTO<UserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetUser(int userId)
+        {
+            if (userId == 0 || userId == null)
+            {
+                return BadRequest(new ApiResponseDTO<object>
+                {
+                    Success = false,
+                    Message = "Invalid user ID"
+                });
+            }
+            var user = await _userService.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound(new ApiResponseDTO<object>
+                {
+                    Success = false,
+                    Message = "User not found"
+                });
+            }
+
+            return Ok(new ApiResponseDTO<UserDTO>
+            {
+                Success = true,
+                Data = user
+            });
+        }
+        #endregion
+
+        #region Update
+
+        [HttpPut("{id}")]
+        //[Authorize(Roles = "staff")]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Update(int id, [FromBody] UserDTO requestDTO)
+        {
+            //User request = requestDTO.Adapt<User>();
+            requestDTO.Id = id;
+            requestDTO.UpdatedAt = DateTime.UtcNow;
+            await _userService.UpdateAsync(requestDTO);
+            return Ok(new { success = true });
+        }
         #endregion
 
         #region Change Password
@@ -101,6 +178,39 @@ namespace WebAPI.Controllers
             });
         }
 
+        #endregion
+
+        #region Deactive
+        [HttpPut("change-isActive/{id}")]
+        //[Authorize(Roles = $"{nameof(RoleEnum.Manager)}")]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ChangeUserActive(int id, bool active)
+        {
+            var userDTO = await _userService.FindByIdAsync(id);
+            if (userDTO == null)
+            {
+                return NotFound(new ApiResponseDTO<object>
+                {
+                    Success = false,
+                    Message = "User not found"
+                });
+            }
+
+            if (userDTO.IsActive == active)
+            {
+                return BadRequest(new ApiResponseDTO<object>
+                {
+                    Success = false,
+                    Message = $"User is currently {(active ? "active" : "not active")}"
+                });
+            }
+
+            var success = await _userService.ChangeUserActive(id, active);
+
+            return Ok(new ApiResponseDTO<object> { Success = success });
+        }
         #endregion
     }
 }

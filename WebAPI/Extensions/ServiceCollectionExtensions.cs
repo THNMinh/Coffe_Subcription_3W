@@ -18,7 +18,6 @@ namespace Core.Extensions
         public static void Register(this IServiceCollection services)
         {
             services.AddHttpContextAccessor();
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IJwtService, JwtService>();
 
             //-----------------User-----------------

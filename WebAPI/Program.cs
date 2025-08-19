@@ -103,6 +103,7 @@ builder.Logging.AddConsole();
 builder.Services.AddDbContext<CoffeSubContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+
 #region Swagger Configuration
 
 builder.Services.AddSwaggerGen(c =>
@@ -159,8 +160,9 @@ builder.Services.AddSingleton(mapper);
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-        options.JsonSerializerOptions.MaxDepth = 64; // Optional: increase max depth if needed
+        options.JsonSerializerOptions.ReferenceHandler = null; //  turn off Preserve
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull; // optional: ignore nulls
+        options.JsonSerializerOptions.WriteIndented = true; // optional: pretty print
     });
 
 // If you are serializing manually, use:
