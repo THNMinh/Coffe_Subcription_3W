@@ -145,6 +145,8 @@ var mapperConfig = new MapperConfiguration(cfg =>
 {
     cfg.AddProfile<UserSubcriptionProfile>();
     cfg.AddProfile<CoffeeItemProfile>();
+    cfg.AddProfile<SubscriptionPlanProfile>();
+    cfg.AddProfile<PlanCoffeeOptionProfile>();
 
 });
 

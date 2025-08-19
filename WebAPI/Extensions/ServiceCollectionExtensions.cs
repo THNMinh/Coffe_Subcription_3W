@@ -63,6 +63,10 @@ namespace Core.Extensions
             services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
             services.AddScoped<IPaymentTransactionService, PaymentTransactionService>();
 
+            //-----------------PlanCoffeOption-----------------
+            services.AddScoped<IPlanCoffeeOptionRepository, PlanCoffeeOptionRepository>();
+            services.AddScoped<IPlanCoffeeOptionService, PlanCoffeeOptionService>();
+
         }
     }
 }
