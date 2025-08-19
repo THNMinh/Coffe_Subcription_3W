@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Core.DTOs.CoffeeItemDTO;
+using Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +19,8 @@ namespace Core.Interfaces.Services
         Task<bool> UpdateAsync(CoffeeItem chapter);
 
         Task<bool> DeleteAsync(int id);
+
+        Task<CoffeeSubscriptionInfoDto?> GetCoffeeSubscriptionInfoAsync(int userId, int coffeeId);
+
     }
 }

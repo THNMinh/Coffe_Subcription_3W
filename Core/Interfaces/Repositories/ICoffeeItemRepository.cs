@@ -1,4 +1,5 @@
-﻿using Core.Interfaces.Repository;
+﻿using Core.DTOs.CoffeeItemDTO;
+using Core.Interfaces.Repository;
 using Core.Models;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,8 @@ namespace Core.Interfaces.Repositories
         public Task<int?> GetCoffeeIdByCodeAsync(string code);
 
         Task<CoffeeItem?> GetByCodeAsync(string code);
+
+        Task<CoffeeSubscriptionInfoDto?> GetCoffeeSubscriptionInfoAsync(int userId, int coffeeId);
 
     }
 }

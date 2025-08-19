@@ -101,5 +101,16 @@ namespace WebAPI.Controllers
             return Ok();
 
         }
+
+        [HttpGet("getSubAndCafeId")]
+        public async Task<IActionResult> GetSubAndCafeId(int userId, int coffeeId)
+        {
+            var coffeeItem = await _service.GetCoffeeSubscriptionInfoAsync(userId, coffeeId);
+            if (coffeeItem == null)
+            {
+                return NotFound();
+            }
+            return Ok(coffeeItem);
+        }
     }
 }
