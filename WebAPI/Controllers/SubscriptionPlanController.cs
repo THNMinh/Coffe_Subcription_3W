@@ -27,6 +27,24 @@ namespace WebAPI.Controllers
             return Ok(result);
         }
 
+        [HttpGet("getAllWithDetails")]
+        public async Task<IActionResult> GetWithDetails()
+        {
+            var result = await _service.GetAllSubscriptionPlanslWithDetailsAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("getByIdWithDetails/{id}")]
+        public async Task<IActionResult> GetByIdWithDetails(int id)
+        {
+            var coffeeItem = await _service.GetByIdWithDetailsAsync(id);
+            if (coffeeItem == null)
+            {
+                return NotFound();
+            }
+            return Ok(coffeeItem);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {

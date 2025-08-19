@@ -14,6 +14,7 @@ using System;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using VNPAY;
 
 
@@ -152,6 +153,22 @@ var mapperConfig = new MapperConfiguration(cfg =>
 
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
+
+
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.MaxDepth = 64; // Optional: increase max depth if needed
+    });
+
+// If you are serializing manually, use:
+//var json = JsonSerializer.Serialize(yourObject, new JsonSerializerOptions
+//{
+//    ReferenceHandler = ReferenceHandler.Preserve,
+//    MaxDepth = 64 // Optional
+//});
 
 var app = builder.Build();
 

@@ -37,9 +37,23 @@ namespace Service.Services
             return plans;
         }
 
+        public async Task<List<SubscriptionPlan>> GetAllSubscriptionPlanslWithDetailsAsync()
+        {
+            var plans = await _subscriptionPlanRepository.GetAllWithDetailsAsync();
+            return plans;
+        }
+
+
+
         public async Task<SubscriptionPlan?> GetByIdAsync(int id)
         {
             return await _subscriptionPlanRepository.GetByIdAsync(id);
+        }
+
+        public async Task<SubscriptionPlan?> GetByIdWithDetailsAsync(int id)
+        {
+            var plans = await _subscriptionPlanRepository.GetByIdWithDetailsAsync(id);
+            return plans.FirstOrDefault(); // Fix: Return the first plan or null if the list is empty
         }
 
         public async Task<bool> UpdateAsync(SubscriptionPlan plan)

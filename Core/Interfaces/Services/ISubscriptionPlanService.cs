@@ -17,5 +17,8 @@ namespace Core.Interfaces.Services
         Task<bool> UpdateAsync(SubscriptionPlan chapter);
 
         Task<bool> DeleteAsync(int id);
+
+        Task<List<SubscriptionPlan>> GetAllSubscriptionPlanslWithDetailsAsync();
+        Task<SubscriptionPlan?> GetByIdWithDetailsAsync(int id);
     }
 }
