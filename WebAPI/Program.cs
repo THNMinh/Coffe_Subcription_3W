@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Core.Config;
 using Core.Extensions;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
@@ -94,7 +95,11 @@ builder.Services.AddScoped<IVnpay, Vnpay>();
 builder.Services.AddHttpContextAccessor();
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        }); 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Information);
@@ -103,6 +108,7 @@ builder.Logging.AddConsole();
 builder.Services.AddDbContext<CoffeSubContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
 
 #region Swagger Configuration
 

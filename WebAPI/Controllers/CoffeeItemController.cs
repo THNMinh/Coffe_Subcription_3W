@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Core.DTOs.CoffeeItemDTO;
+using Core.DTOs.Request;
 using Core.Interfaces.Services;
 using Core.Models;
 using Humanizer;
@@ -14,12 +15,14 @@ namespace WebAPI.Controllers
     {
         private readonly ICoffeeItemService _service;
         private readonly IMapper _mapper;
+        private readonly ICloudinaryService _cloudinaryService;
 
-         
-        public CoffeeItemController(ICoffeeItemService service, IMapper mapper)
+        public CoffeeItemController(ICoffeeItemService service, IMapper mapper, 
+            ICloudinaryService cloudinaryService)
         {
             _service = service;
             _mapper = mapper;
+            _cloudinaryService = cloudinaryService;
         }
 
         [HttpGet("getAll")]
@@ -41,13 +44,21 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] CreateCoffeeItemDto dto)
+        [Consumes("multipart/form-data")] 
+        public async Task<IActionResult> Create([FromForm] CoffeeItemRequestDto dto)
         {
             if (dto == null)
             {
                 return BadRequest("Coffee item cannot be null");
             }
+            string imageUrl = null;
+            if (dto.Image != null && dto.Image.Length > 0)
+            {
+                imageUrl = await _cloudinaryService.UploadImageAsync(dto.Image, "coffee_items");
+            }
+
             var coffeeItem = _mapper.Map<CoffeeItem>(dto);
+            coffeeItem.ImageUrl = imageUrl;
 
             var createdCoffeeItem = await _service.CreateAsync(coffeeItem);
             return Ok(createdCoffeeItem);
@@ -100,6 +111,17 @@ namespace WebAPI.Controllers
             }
             return Ok();
 
+        }
+
+        [HttpPost("image")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadImage([FromForm] UploadImageRequestDTO request)
+        {
+            if (request.File == null || request.File.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            var url = await _cloudinaryService.UploadImageAsync(request.File, "my_app/images");
+            return Ok(new { imageUrl = url });
         }
     }
 }

@@ -66,6 +66,11 @@ namespace Core.Extensions
             services.AddScoped<IPlanCoffeeOptionRepository, PlanCoffeeOptionRepository>();
             services.AddScoped<IPlanCoffeeOptionService, PlanCoffeeOptionService>();
 
+
+            //-----------------Cloudinary-----------------
+            services.AddScoped<ICloudinaryService, CloudinaryService>();
+
+
         }
     }
 }
