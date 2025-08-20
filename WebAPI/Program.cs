@@ -1,16 +1,18 @@
-using Core.Interfaces.Repositories;
-using Core.Interfaces.Services;
-using  Core.Models;
+﻿using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using AutoMapper;
+using Core.Config;
+using Core.Extensions;
+using Core.MappingProfile;
+using Core.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Repository.Repositories;
-using Service.Services;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
 using VNPAY;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,35 +80,36 @@ builder.Services.AddAuthentication(options =>
          };
      });
 #endregion
+var clientId = builder.Configuration["GOOGLE_CLIENTID"];
+
 // Add services to the container.
-builder.Services.AddScoped<IJwtService, JwtService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IEmailService, EmailService>();
 
-
-builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
-builder.Services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
-builder.Services.AddScoped<ICoffeeItemRepository, CoffeeItemRepository>();
- 
 // Add VNPAY service to the container.
-builder.Services.AddSingleton<IVnpay, Vnpay>();
+//builder.Services.AddSingleton<IVnpay, Vnpay>();
+builder.Services.AddScoped<IVnpay, Vnpay>();
 builder.Services.AddHttpContextAccessor();
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
+builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Information);
+builder.Logging.AddConsole();
 //1.Configure conn db
 builder.Services.AddDbContext<CoffeSubContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
 
 #region Swagger Configuration
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Coffee Subscription API", Version = "v1" });
 
     // Add JWT Authentication to Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -135,6 +138,40 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 #endregion
+
+
+builder.Services.Register();
+//builder.Services.RegisterMapsterConfiguration();
+
+
+var mapperConfig = new MapperConfiguration(cfg =>
+{
+    cfg.AddProfile<UserSubcriptionProfile>();
+    cfg.AddProfile<CoffeeItemProfile>();
+    cfg.AddProfile<SubscriptionPlanProfile>();
+    cfg.AddProfile<PlanCoffeeOptionProfile>();
+
+});
+
+IMapper mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
+
+
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = null; //  turn off Preserve
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull; // optional: ignore nulls
+        options.JsonSerializerOptions.WriteIndented = true; // optional: pretty print
+    });
+
+// If you are serializing manually, use:
+//var json = JsonSerializer.Serialize(yourObject, new JsonSerializerOptions
+//{
+//    ReferenceHandler = ReferenceHandler.Preserve,
+//    MaxDepth = 64 // Optional
+//});
 
 var app = builder.Build();
 

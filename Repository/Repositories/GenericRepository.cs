@@ -1,12 +1,6 @@
 ﻿using Core.Interfaces.Repository;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Repository.Repositories
 {
@@ -29,7 +23,7 @@ namespace Repository.Repositories
         }
 
         public virtual async Task<T?> GetByIdAsync(TKey id) => await _dbSet.FindAsync(id);
-        
+
 
         public async ValueTask<T> CreateAsync(T t)
         {
@@ -69,6 +63,5 @@ namespace Repository.Repositories
                 return false;
             }
         }
-
     }
 }

@@ -12,7 +12,15 @@
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "SMTP_PASSWORD": "pcgw tanh mmtm xvdn"
+        "SMTP_PASSWORD": "pcgw tanh mmtm xvdn",
+        "DB_HOST": "222.254.155.34 ",
+        "DB_USER": "sa",
+        "DB_PASS": "12345",
+        "DB_NAME": "coffe_3w",
+        "GOOGLE_CLIENTID": "998234419612-qa7oprsiasf64o6uh0drbv3ls0u7uijs.apps.googleusercontent.com",
+        "CLOUDINARY__CLOUDNAME": "dfniy6iy3",
+        "CLOUDINARY__APIKEY": "437992284675156",
+        "CLOUDINARY__APISECRET": "L3UYboF4ZW960-t1_dpsut5quD4"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7222;http://localhost:5078"

@@ -1,10 +1,6 @@
 ﻿using Core.Interfaces.Repositories;
 using Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repository.Repositories
 {
@@ -14,6 +10,12 @@ namespace Repository.Repositories
         public PaymentTransactionRepository(CoffeSubContext context) : base(context)
         {
             _context = context;
+        }
+
+        public async Task<PaymentTransaction?> GetByOrderIdAsync(string id)
+        {
+            return await _context.PaymentTransactions
+                .FirstOrDefaultAsync(pt => pt.TransactionNo == id);
         }
     }
 }

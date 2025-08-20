@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace Core.DTOs
 {
     public class UserDTO
     {
-        public int UserId { get; set; }
+        public int Id { get; set; }
 
         public string Username { get; set; } = null!;
 
@@ -27,7 +22,7 @@ namespace Core.DTOs
         [JsonPropertyName("updatedAt")]
         public DateTime UpdatedAt { get; set; }
 
-        public string Role {  get; set; }  
+        public string RoleId { get; set; }
 
         public bool IsActive { get; set; }
     }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
+﻿namespace Core.Models;
 
 public partial class SubscriptionPlan
 {
@@ -19,7 +16,7 @@ public partial class SubscriptionPlan
 
     public int DailyCupLimit { get; set; }
 
-    public bool IsActive { get; set; }
+    public bool IsActive { get; set; } = true;
 
     public virtual ICollection<PlanCoffeeOption> PlanCoffeeOptions { get; set; } = new List<PlanCoffeeOption>();
 

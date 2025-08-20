@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
+﻿namespace Core.Models;
 
 public partial class PaymentTransaction
 {
@@ -17,7 +14,7 @@ public partial class PaymentTransaction
 
     public string? TransactionNo { get; set; }
 
-    public string? PaymentTime { get; set; }
+    public DateTime? PaymentTime { get; set; }
 
     public string? TransactionStatus { get; set; }
 

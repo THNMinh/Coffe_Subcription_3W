@@ -1,9 +1,4 @@
 ﻿using Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Interfaces.Services
 {
@@ -17,5 +12,8 @@ namespace Core.Interfaces.Services
         Task<bool> UpdateAsync(SubscriptionPlan chapter);
 
         Task<bool> DeleteAsync(int id);
+
+        Task<List<SubscriptionPlan>> GetAllSubscriptionPlanslWithDetailsAsync();
+        Task<SubscriptionPlan?> GetByIdWithDetailsAsync(int id);
     }
 }

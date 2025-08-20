@@ -1,14 +1,13 @@
 ﻿using Core.Interfaces.Repository;
 using Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Interfaces.Repositories
 {
     public interface ISubscriptionPlanRepository : IGenericRepository<SubscriptionPlan, int>
     {
+        Task<List<SubscriptionPlan>> GetAllWithDetailsAsync();
+        Task<List<SubscriptionPlan>> GetByIdWithDetailsAsync(int id);
+
+
     }
 }

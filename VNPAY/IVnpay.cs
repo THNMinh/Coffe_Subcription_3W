@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using VNPAY.Models;
 
-namespace VNPAY 
+namespace VNPAY
 {
     /// <summary>
     /// Giao diện định nghĩa các phương thức cần thiết để tích hợp với hệ thống thanh toán VNPAY.
@@ -41,6 +41,7 @@ namespace VNPAY
         /// </summary>
         /// <param name="collections">Thông tin các tham số trả về từ VNPAY qua callback.</param>
         /// <returns></returns>
-        PaymentResult GetPaymentResult(IQueryCollection parameters);
+        //PaymentResult GetPaymentResultAsync(IQueryCollection parameters);
+        Task<PaymentResult> GetPaymentResultAsync(IQueryCollection parameters);
     }
 }

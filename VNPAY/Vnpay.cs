@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Globalization;
+﻿using System.Globalization;
+using Core.Interfaces.Services;
+using Microsoft.AspNetCore.Http;
 using VNPAY.Enums;
 using VNPAY.Models;
 using VNPAY.Utilities;
@@ -14,6 +15,13 @@ namespace VNPAY
         private string _baseUrl;
         private string _version;
         private string _orderType;
+
+        private readonly IPaymentTransactionService _paymentTransactionService;
+
+        public Vnpay(IPaymentTransactionService paymentTransactionService)
+        {
+            _paymentTransactionService = paymentTransactionService;
+        }
 
         public void Initialize(string tmnCode,
             string hashSecret,
@@ -79,7 +87,7 @@ namespace VNPAY
         /// </summary>
         /// <param name="parameters">Các tham số trong chuỗi truy vấn của <c>CallbackUrl</c></param>
         /// <returns></returns>
-        public PaymentResult GetPaymentResult(IQueryCollection parameters)
+        public async Task<PaymentResult> GetPaymentResultAsync(IQueryCollection parameters)
         {
             var responseData = parameters
                 .Where(kv => !string.IsNullOrEmpty(kv.Key) && kv.Key.StartsWith("vnp_"))
@@ -119,7 +127,7 @@ namespace VNPAY
             var responseCode = (ResponseCode)sbyte.Parse(vnp_ResponseCode);
             var transactionStatusCode = (TransactionStatusCode)sbyte.Parse(vnp_TransactionStatus);
 
-            return new PaymentResult
+            var paymentResult = new PaymentResult
             {
                 PaymentId = long.Parse(vnp_TxnRef),
                 VnpayTransactionId = long.Parse(vnp_TransactionNo),
@@ -149,6 +157,19 @@ namespace VNPAY
                         : vnp_BankTranNo,
                 }
             };
+
+            var transaction = await _paymentTransactionService.GetByOrderIdAsync(paymentResult.PaymentId.ToString());
+
+            if (paymentResult.IsSuccess)
+            {
+                if (transaction != null)
+                {
+                    transaction.TransactionStatus = "success";
+                    await _paymentTransactionService.UpdateAsync(transaction);
+                }
+            }
+
+            return paymentResult;
         }
 
         private void EnsureParametersBeforePayment()

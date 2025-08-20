@@ -1,14 +1,10 @@
 ﻿using Core.Interfaces.Repository;
 using Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Interfaces.Repositories
 {
     public interface IPaymentTransactionRepository : IGenericRepository<PaymentTransaction, int>
     {
+        public Task<PaymentTransaction> GetByOrderIdAsync(string id);
     }
 }

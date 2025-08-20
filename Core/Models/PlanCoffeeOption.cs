@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
+﻿namespace Core.Models;
 
 public partial class PlanCoffeeOption
 {
@@ -11,7 +8,7 @@ public partial class PlanCoffeeOption
 
     public int CoffeeId { get; set; }
 
-    public bool IsActive { get; set; }
+    public bool IsActive { get; set; } = true;
 
     public virtual CoffeeItem Coffee { get; set; } = null!;
 
