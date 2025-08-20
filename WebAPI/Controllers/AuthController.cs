@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Core.DTOs;
 using Core.DTOs.Request;
 using Core.DTOs.Response;
@@ -142,7 +143,6 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Get Current User
-
         [Authorize]
         [HttpGet("current-logged-user")]
         [ProducesResponseType(typeof(ApiResponseDTO<UserDTO>), StatusCodes.Status200OK)]
@@ -186,9 +186,76 @@ namespace WebAPI.Controllers
                 Success = true,
                 Data = userDTO
             });
-            #endregion
-
-
         }
+        #endregion
+
+        #region Get Current User With Token
+        [HttpGet("current-logged-user-with-token")]
+        [ProducesResponseType(typeof(ApiResponseDTO<UserProfileResponseDTO>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetCurrentUser([FromQuery] string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                return Unauthorized(new ApiResponseDTO<object>
+                {
+                    Success = false,
+                    Message = "JWT token is missing."
+                });
+            }
+            var handler = new JwtSecurityTokenHandler();
+            JwtSecurityToken jwtToken;
+            try
+            {
+                jwtToken = handler.ReadJwtToken(token); 
+            }
+            catch
+            {
+                return Unauthorized(new ApiResponseDTO<object>
+                {
+                    Success = false,
+                    Message = "Invalid JWT token."
+                });
+            }
+
+            // Extract claims
+            var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var emailClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized(new ApiResponseDTO<object>
+                {
+                    Success = false,
+                    Message = "User ID is missing in token."
+                });
+            }
+            var userDTO = await _userService.FindProfileByIdAsync(int.Parse(userIdClaim));
+            if (userDTO == null)
+            {
+                return NotFound(new ApiResponseDTO<object>
+                {
+                    Success = false,
+                    Message = "User not found."
+                });
+            }
+
+            // Map claims to DTO
+            userDTO.Email = emailClaim ?? string.Empty;
+            userDTO.Role = roleClaim switch
+            {
+                "1" => "Member",
+                "2" => "Staff",
+                "3" => "Manager",
+                "4" => "Admin",
+                _ => "Unknown"
+            };
+            return Ok(new ApiResponseDTO<UserProfileResponseDTO>
+            {
+                Success = true,
+                Data = userDTO
+            });
+        }
+        #endregion
     }
 }
