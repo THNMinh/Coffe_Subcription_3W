@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
+using Microsoft.AspNetCore.Http;
 
 namespace VNPAY.Utilities
 {

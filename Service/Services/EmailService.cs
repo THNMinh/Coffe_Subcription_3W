@@ -1,14 +1,9 @@
-﻿using MailKit.Net.Smtp;
-using MimeKit;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Core.Constants;
-using MimeKit.Text;
+﻿using Core.Constants;
 using Core.Interfaces.Services;
+using MailKit.Net.Smtp;
 using Microsoft.Extensions.Configuration;
+using MimeKit;
+using MimeKit.Text;
 namespace Service.Services
 {
     public class EmailService : IEmailService

@@ -1,5 +1,4 @@
 ﻿using Core.DTOs;
-using Core.DTOs.Request;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
@@ -7,12 +6,6 @@ using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Repository.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.Services
 {

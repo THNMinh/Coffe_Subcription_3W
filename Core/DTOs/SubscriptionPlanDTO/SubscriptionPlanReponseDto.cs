@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Core.DTOs.SubscriptionPlanDTO
+﻿namespace Core.DTOs.SubscriptionPlanDTO
 {
     public class SubscriptionPlanReponseDto
     {

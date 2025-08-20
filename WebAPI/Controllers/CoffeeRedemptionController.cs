@@ -1,7 +1,5 @@
-﻿using Core.DTOs.UserSubscriptionDTO;
-using Core.Interfaces.Services;
+﻿using Core.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
-using Service.Services;
 
 namespace WebAPI.Controllers
 {
@@ -16,7 +14,7 @@ namespace WebAPI.Controllers
         [HttpPost("/api/EnterCafeCode")]
         public async Task<IActionResult> Create(int subscriptionId, string coffeeCode)
         {
-           var createdSub = await _service.ProcessRedemptionAsync(subscriptionId, coffeeCode);
+            var createdSub = await _service.ProcessRedemptionAsync(subscriptionId, coffeeCode);
             return Ok(createdSub);
         }
 

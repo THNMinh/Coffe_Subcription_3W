@@ -1,21 +1,16 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using AutoMapper;
 using Core.Config;
 using Core.Extensions;
-using Core.Interfaces.Repositories;
-using Core.Interfaces.Services;
 using Core.MappingProfile;
-using  Core.Models;
+using Core.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Repository.Repositories;
-using Service.Services;
-using System;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using VNPAY;
 
 
@@ -99,7 +94,7 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-        }); 
+        });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Information);

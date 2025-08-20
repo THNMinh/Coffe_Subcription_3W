@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Core.Interfaces.Services;
+﻿using System.Security.Claims;
 using Core.DTOs;
-using Core.DTOs.Response;
 using Core.DTOs.Request;
-using Service.Services;
-using Newtonsoft.Json.Linq;
+using Core.DTOs.Response;
+using Core.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
@@ -27,7 +24,7 @@ namespace WebAPI.Controllers
             _googleAuthService = googleAuthService;
             _userService = userService;
             _emailService = emailService;
-;
+            ;
         }
 
         #region Login

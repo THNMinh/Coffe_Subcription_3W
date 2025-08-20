@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Core.Interfaces.Repositories;
-using Core.Interfaces.Repository;
+﻿using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
-using Service.Services;
-
-using Microsoft.Extensions.DependencyInjection;
 using Repository.Repositories;
+using Service.Services;
 
 namespace Core.Extensions
 {
@@ -48,7 +40,7 @@ namespace Core.Extensions
             //-----------------CoffeeRedemption-----------------
             services.AddScoped<ICoffeeRedemptionRepository, CoffeeRedemptionRepository>();
             services.AddScoped<ICoffeeRedemptionService, CoffeeRedemptionService>();
-          
+
             //-----------------SubscriptionPlan-----------------
             services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
             services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();

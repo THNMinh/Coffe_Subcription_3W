@@ -3,9 +3,7 @@ using Core.DTOs.CoffeeItemDTO;
 using Core.DTOs.Request;
 using Core.Interfaces.Services;
 using Core.Models;
-using Humanizer;
 using Microsoft.AspNetCore.Mvc;
-using Service.Services;
 
 namespace WebAPI.Controllers
 {
@@ -17,7 +15,7 @@ namespace WebAPI.Controllers
         private readonly IMapper _mapper;
         private readonly ICloudinaryService _cloudinaryService;
 
-        public CoffeeItemController(ICoffeeItemService service, IMapper mapper, 
+        public CoffeeItemController(ICoffeeItemService service, IMapper mapper,
             ICloudinaryService cloudinaryService)
         {
             _service = service;
@@ -44,7 +42,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("create")]
-        [Consumes("multipart/form-data")] 
+        [Consumes("multipart/form-data")]
         public async Task<IActionResult> Create([FromForm] CoffeeItemRequestDto dto)
         {
             if (dto == null)
@@ -74,7 +72,7 @@ namespace WebAPI.Controllers
                 return NotFound();
             }
             _mapper.Map(dto, existingCoffee);
- 
+
             var result = await _service.UpdateAsync(existingCoffee);
             if (!result)
             {

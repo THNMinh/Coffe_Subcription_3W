@@ -3,7 +3,6 @@ using Core.DTOs.UserSubscriptionDTO;
 using Core.Interfaces.Services;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
-using Service.Services;
 
 namespace WebAPI.Controllers
 {
@@ -38,7 +37,7 @@ namespace WebAPI.Controllers
                 return NotFound();
             }
 
- 
+
             return Ok(subscription);
         }
 
@@ -46,7 +45,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Create([FromBody] CreateUserSubscriptionDto dto)
         {
 
- 
+
             var sub = _mapper.Map<Core.Models.UserSubscription>(dto);
 
             var createdSub = await _userSubscriptionService.CreateAsync(sub);
@@ -64,7 +63,7 @@ namespace WebAPI.Controllers
 
 
             return Ok(createdSubresponse);
-             
+
         }
 
         [HttpPut("{id}")]

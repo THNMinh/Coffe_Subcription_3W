@@ -1,21 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Security.Cryptography;
 using Core.Constants;
-using Core.DTOs.Request;
 using Core.DTOs;
-using Core.Models;
-using Core.Interfaces.Repositories;
-using Microsoft.AspNetCore.Http;
-using Mapster;
-using Core.Interfaces.Services;
+using Core.DTOs.Request;
 using Core.DTOs.Response;
 using Core.DTOs.UserSubscriptionDTO;
+using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
+using Core.Models;
+using Mapster;
+using Microsoft.AspNetCore.Http;
 
 namespace Service.Services
 {
@@ -27,7 +20,7 @@ namespace Service.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserSubcriptionRepository _userSubcriptionRepository;
 
-        public UserService(IUserRepository userRepository, IJwtService jwtService, 
+        public UserService(IUserRepository userRepository, IJwtService jwtService,
             IHttpContextAccessor httpContextAccessor, IUserSubcriptionRepository userSubcriptionRepository)
         {
             _userRepository = userRepository;
@@ -83,7 +76,7 @@ namespace Service.Services
         public async Task<bool> IsUserExists(int type, string request)
         {
             var user = await _userRepository.GetAsync(u =>
-                (type == 1 && u.Email == request) || 
+                (type == 1 && u.Email == request) ||
                 (type == 2 && u.Username == request)
             );
 

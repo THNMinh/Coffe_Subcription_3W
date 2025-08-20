@@ -1,12 +1,6 @@
 ﻿using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
-using Repository.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.Services
 {
@@ -56,7 +50,7 @@ namespace Service.Services
 
         public async Task<List<UserSubscription>> GetAllUserSubscriptionPlansAsync()
         {
-            
+
             return await _userSubcriptionRepository.GetAllAsync();
         }
 

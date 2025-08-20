@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Core.DTOs.CoffeeItemDTO;
 using Core.DTOs.SubscriptionPlanDTO;
 using Core.Interfaces.Services;
 using Core.Models;

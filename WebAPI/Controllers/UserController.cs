@@ -1,12 +1,9 @@
-﻿using Core.DTOs.Request;
+﻿using Core.DTOs;
+using Core.DTOs.Request;
 using Core.DTOs.Response;
-using Core.DTOs;
 using Core.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Core.Models;
-using Mapster;
 
 namespace WebAPI.Controllers
 {

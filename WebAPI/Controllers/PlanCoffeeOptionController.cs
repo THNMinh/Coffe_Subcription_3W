@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Core.DTOs.CoffeeItemDTO;
 using Core.DTOs.PlanCoffeeOptionDTO;
 using Core.Interfaces.Services;
 using Core.Models;
@@ -13,7 +12,7 @@ namespace WebAPI.Controllers
     {
         private readonly IPlanCoffeeOptionService _service;
         private readonly IMapper _mapper;
-        
+
         public PlanCoffeeOptionController(IPlanCoffeeOptionService service, IMapper mapper)
         {
             _service = service;

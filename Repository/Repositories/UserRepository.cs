@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using Core.Interfaces.Repositories;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +37,7 @@ namespace Repository.Repositories
                 return false;
             }
 
-            existingUser.PasswordHash = user.PasswordHash; 
+            existingUser.PasswordHash = user.PasswordHash;
             existingUser.CreatedAt = DateTime.SpecifyKind(user.CreatedAt, DateTimeKind.Utc);
             existingUser.UpdatedAt = DateTime.UtcNow;
 

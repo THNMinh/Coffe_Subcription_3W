@@ -1,8 +1,6 @@
-﻿using Core.Interfaces.Repositories;
+﻿using System.Globalization;
 using Core.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
-using System.Globalization;
-using System.Threading.Tasks;
 using VNPAY.Enums;
 using VNPAY.Models;
 using VNPAY.Utilities;

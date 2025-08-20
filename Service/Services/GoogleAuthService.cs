@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Core.Interfaces.Services;
+﻿using Core.Interfaces.Services;
 using Google.Apis.Auth;
 using Microsoft.Extensions.Configuration;
 
