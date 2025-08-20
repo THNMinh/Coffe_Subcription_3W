@@ -17,18 +17,16 @@ namespace Repository.Repositories
         public UserRepository(CoffeSubContext context) : base(context)
         {
             _context = context;
+            _set = context.Set<User>();
         }
-        public async Task<User> GetByEmailAsync(string email, string? includeProperties = null, CancellationToken cancellationToken = default)
+
+        public async Task<User> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
-            IQueryable<User> query = _set;
-            if (!string.IsNullOrEmpty(includeProperties))
-            {
-                foreach (var incluProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    query = query.Include(incluProp);
-                }
-            }
-            return await query.SingleOrDefaultAsync(x => x.Email == email, cancellationToken);
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ArgumentException("Email must not be empty.", nameof(email));
+
+            return await _context.Set<User>()
+                                 .SingleOrDefaultAsync(u => u.Email == email, cancellationToken);
         }
 
         public async Task<User> GetAsync(Expression<Func<User, bool>> filter, CancellationToken cancellationToken = default)
@@ -45,6 +43,7 @@ namespace Repository.Repositories
             }
 
             existingUser.PasswordHash = user.PasswordHash; 
+            existingUser.CreatedAt = DateTime.SpecifyKind(user.CreatedAt, DateTimeKind.Utc);
             existingUser.UpdatedAt = DateTime.UtcNow;
 
             _context.Users.Update(existingUser);

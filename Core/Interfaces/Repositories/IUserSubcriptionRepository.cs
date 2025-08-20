@@ -15,6 +15,6 @@ namespace Core.Interfaces.Repositories
         Task<bool> IsCoffeeInPlanAsync(int planId, int coffeeId);
         Task<bool> IsWithinValidTimeWindowAsync(int planId, TimeSpan time);
         Task DecrementRemainingCupsAsync(int subscriptionId);
-
+        Task<UserSubscription?> GetByUserIdAsync(int id);
     }
 }

@@ -40,7 +40,7 @@ namespace Core.Models
         public bool IsActive { get; set; }
 
         [Column("role_id")]
-        public int RoleId { get; set; }
+        public int? RoleId { get; set; }
 
         public virtual ICollection<PaymentTransaction> PaymentTransactions { get; set; } = new List<PaymentTransaction>();
 

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Mapster;
 using Core.Interfaces.Services;
 using Core.DTOs.Response;
+using Core.DTOs.UserSubscriptionDTO;
 
 namespace Service.Services
 {
@@ -24,12 +25,15 @@ namespace Service.Services
         private readonly IUserRepository _userRepository;
         private readonly IJwtService _jwtService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUserSubcriptionRepository _userSubcriptionRepository;
 
-        public UserService(IUserRepository userRepository, IJwtService jwtService, IHttpContextAccessor httpContextAccessor)
+        public UserService(IUserRepository userRepository, IJwtService jwtService, 
+            IHttpContextAccessor httpContextAccessor, IUserSubcriptionRepository userSubcriptionRepository)
         {
             _userRepository = userRepository;
             _jwtService = jwtService;
             _httpContextAccessor = httpContextAccessor;
+            _userSubcriptionRepository = userSubcriptionRepository;
         }
 
         public async Task RegisterAsync(RegisterRequestDTO requestDTO)
@@ -103,6 +107,7 @@ namespace Service.Services
             {
                 return false;
             }
+            user.UpdatedAt = DateTime.UtcNow;
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
             return await _userRepository.UpdatePassword(user);
         }
@@ -132,7 +137,6 @@ namespace Service.Services
                     passwordChars[i] = generatedChar;
                 }
             }
-
             return new string(passwordChars);
         }
 
@@ -144,6 +148,18 @@ namespace Service.Services
                 return null;
             }
             return user.Adapt<UserDTO>();
+        }
+        public async Task<UserProfileResponseDTO?> FindProfileByIdAsync(int id)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user == null) return null;
+            var userDTO = user.Adapt<UserProfileResponseDTO>();
+            var userSub = await _userSubcriptionRepository.GetByUserIdAsync(user.Id);
+            if (userSub != null)
+            {
+                userDTO.UserSubscriptions = userSub.Adapt<UserSubscriptionProfileResponseDTO>();
+            }
+            return userDTO;
         }
 
         public async Task<bool> VerifyPassword(UserDTO userDTO, string oldPassword)
@@ -164,10 +180,37 @@ namespace Service.Services
             return userDTOs;
         }
 
-        public async Task<bool> UpdateAsync(UserDTO userDTO)
+        public async Task<bool> UpdateAsync(UserRequestDTO userDTO)
         {
-            User user = new User();
-            user.Adapt<UserDTO>();
+            var user = await _userRepository.GetAsync(u => u.Id == userDTO.Id);
+            if (user == null) return false;
+
+            if (!string.IsNullOrEmpty(userDTO.Username))
+                user.Username = userDTO.Username;
+
+            if (!string.IsNullOrEmpty(userDTO.PasswordHash))
+                user.PasswordHash = userDTO.PasswordHash;
+
+            if (!string.IsNullOrEmpty(userDTO.FullName))
+                user.FullName = userDTO.FullName;
+
+            if (!string.IsNullOrEmpty(userDTO.Email))
+                user.Email = userDTO.Email;
+
+            if (!string.IsNullOrEmpty(userDTO.PhoneNumber))
+                user.PhoneNumber = userDTO.PhoneNumber;
+
+            user.CreatedAt = DateTime.SpecifyKind(user.CreatedAt, DateTimeKind.Utc);
+
+
+            user.UpdatedAt = DateTime.UtcNow; ;
+
+            if (userDTO.RoleId.HasValue)
+                user.RoleId = userDTO.RoleId;
+
+            if (userDTO.IsActive.HasValue)
+                user.IsActive = userDTO.IsActive.Value;
+
             return await _userRepository.UpdateAsync(user);
         }
 

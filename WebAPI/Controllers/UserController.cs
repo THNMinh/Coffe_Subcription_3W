@@ -119,10 +119,12 @@ namespace WebAPI.Controllers
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update(int id, [FromBody] UserDTO requestDTO)
+        public async Task<IActionResult> Update(int id, [FromBody] UserRequestDTO requestDTO)
         {
             //User request = requestDTO.Adapt<User>();
             requestDTO.Id = id;
+            if (requestDTO.CreatedAt.HasValue)
+                requestDTO.CreatedAt = DateTime.SpecifyKind(requestDTO.CreatedAt.Value, DateTimeKind.Utc);
             requestDTO.UpdatedAt = DateTime.UtcNow;
             await _userService.UpdateAsync(requestDTO);
             return Ok(new { success = true });

@@ -69,5 +69,10 @@ namespace Service.Services
         {
             return await _userSubcriptionRepository.UpdateAsync(transaction);
         }
+
+        public async Task<UserSubscription?> GetByUserIdAsync(int id)
+        {
+            return await _userSubcriptionRepository.GetByIdAsync(id);
+        }
     }
 }

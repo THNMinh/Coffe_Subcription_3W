@@ -4,16 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Core.DTOs.UserSubscriptionDTO;
+using Core.Models;
 
-namespace Core.DTOs
+namespace Core.DTOs.Response
 {
-    public class UserDTO
+    public class UserProfileResponseDTO
     {
         public int Id { get; set; }
-
         public string Username { get; set; } = null!;
 
-        public string PasswordHash { get; set; } = null!;
 
         public string FullName { get; set; } = null!;
 
@@ -21,14 +21,9 @@ namespace Core.DTOs
 
         public string? PhoneNumber { get; set; }
 
-        [JsonPropertyName("createdAt")]
-        public DateTime CreatedAt { get; set; }
+        public string Role { get; set; }
 
-        [JsonPropertyName("updatedAt")]
-        public DateTime UpdatedAt { get; set; }
+        public virtual UserSubscriptionProfileResponseDTO UserSubscriptions { get; set; } = new UserSubscriptionProfileResponseDTO();
 
-        public string RoleId {  get; set; }  
-
-        public bool IsActive { get; set; }
     }
 }

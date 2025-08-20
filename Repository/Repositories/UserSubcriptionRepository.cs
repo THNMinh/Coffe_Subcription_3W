@@ -70,6 +70,11 @@ namespace Repository.Repositories
                 await _context.SaveChangesAsync();
             }
         }
-
+        public async Task<UserSubscription?> GetByUserIdAsync(int id)
+        {
+            return await _context.UserSubscriptions
+                .Where(us => us.IsActive && us.UserId == id)
+                .FirstOrDefaultAsync();
+        }
     }
 }

@@ -27,6 +27,7 @@ namespace WebAPI.Controllers
             _googleAuthService = googleAuthService;
             _userService = userService;
             _emailService = emailService;
+;
         }
 
         #region Login
@@ -165,7 +166,6 @@ namespace WebAPI.Controllers
             var email = User.FindFirst(ClaimTypes.Email)?.Value; // Email
             var role = User.FindFirst(ClaimTypes.Role)?.Value; // Role
             var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
-
             if (userId == null)
             {
                 return Unauthorized(new ApiResponseDTO<object>
@@ -174,7 +174,7 @@ namespace WebAPI.Controllers
                     Message = "User ID is not found in the claims."
                 });
             }
-            var userDTO = await _userService.FindByIdAsync(int.Parse(userId));
+            var userDTO = await _userService.FindProfileByIdAsync(int.Parse(userId));
             userDTO.Role = role switch
             {
                 "1" => "Member",
@@ -184,8 +184,7 @@ namespace WebAPI.Controllers
                 _ => "Unknown"
             };
             userDTO.Email = email ?? string.Empty;
-
-            return Ok(new ApiResponseDTO<UserDTO>
+            return Ok(new ApiResponseDTO<UserProfileResponseDTO>
             {
                 Success = true,
                 Data = userDTO
