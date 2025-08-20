@@ -123,5 +123,16 @@ namespace WebAPI.Controllers
             var url = await _cloudinaryService.UploadImageAsync(request.File, "coffee_sub/images");
             return Ok(new { imageUrl = url });
         }
+
+        [HttpGet("getSubAndCafeId")]
+        public async Task<IActionResult> GetSubAndCafeId(int userId, int coffeeId)
+        {
+            var coffeeItem = await _service.GetCoffeeSubscriptionInfoAsync(userId, coffeeId);
+            if (coffeeItem == null)
+            {
+                return NotFound();
+            }
+            return Ok(coffeeItem);
+        }
     }
 }

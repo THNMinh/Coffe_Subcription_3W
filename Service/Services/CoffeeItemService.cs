@@ -1,4 +1,5 @@
-﻿using Core.Interfaces.Repositories;
+﻿using Core.DTOs.CoffeeItemDTO;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
 using System;
@@ -42,5 +43,11 @@ namespace Service.Services
         {
             return await _coffeeItemRepository.UpdateAsync(chapter);
         }
+
+        public Task<CoffeeSubscriptionInfoDto?> GetCoffeeSubscriptionInfoAsync(int userId, int coffeeId)
+        {
+            return _coffeeItemRepository.GetCoffeeSubscriptionInfoAsync(userId, coffeeId);
+        }
+
     }
 }

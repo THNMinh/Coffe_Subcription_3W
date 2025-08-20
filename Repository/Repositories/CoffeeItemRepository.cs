@@ -1,4 +1,5 @@
-﻿using Core.Interfaces.Repositories;
+﻿using Core.DTOs.CoffeeItemDTO;
+using Core.Interfaces.Repositories;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -32,6 +33,26 @@ namespace Repository.Repositories
                     ci.Code == code &&
                     ci.IsActive);
         }
+
+        public async Task<CoffeeSubscriptionInfoDto?> GetCoffeeSubscriptionInfoAsync(int userId, int coffeeId)
+        {
+            var result = await (from us in _context.UserSubscriptions
+                                join ci in _context.CoffeeItems on coffeeId equals ci.CoffeeId
+                                where us.UserId == userId
+                                      && ci.CoffeeId == coffeeId
+                                      && ci.IsActive
+                                      && us.IsActive
+                                select new CoffeeSubscriptionInfoDto
+                                {
+                                    SubscriptionId = us.SubscriptionId,
+                                    CoffeeCode = ci.Code,
+                                    UserId = us.UserId
+                                })
+                                .FirstOrDefaultAsync();
+
+            return result;
+        }
+
 
     }
 }
