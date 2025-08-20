@@ -190,7 +190,7 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Get Current User With Token
-        [HttpPut("current-logged-user-with-token")]
+        [HttpPost("current-logged-user-with-token")]
         [ProducesResponseType(typeof(ApiResponseDTO<UserProfileResponseDTO>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCurrentUser([FromBody] string token)
         {
