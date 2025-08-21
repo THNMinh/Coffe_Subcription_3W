@@ -20,7 +20,7 @@ namespace WebAPI.Controllers
         }
         #region Get All
 
-        [HttpGet("getAll")]
+        [HttpGet("")]
         [ProducesResponseType(typeof(ApiResponseDTO<DailyCupTrackingDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAll()
@@ -70,7 +70,7 @@ namespace WebAPI.Controllers
 
         #region Create
 
-        [HttpPost("create")]
+        [HttpPost("")]
         //[Authorize(Roles = "staff")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]

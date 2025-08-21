@@ -18,7 +18,6 @@ namespace WebAPI.Controllers
             _userService = userService;
         }
         #region Register
-
         [HttpPost("")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
@@ -52,9 +51,8 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Get Users
-
         //[Authorize(Roles = "manager")]
-        [HttpPost("")]
+        [HttpGet("")]
         [ProducesResponseType(typeof(ApiResponseDTO<List<UserResponseDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status401Unauthorized)]
