@@ -19,7 +19,7 @@ namespace WebAPI.Controllers
         }
         #region Register
 
-        [HttpPost("register")]
+        [HttpPost("")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDTO registerRequest)
@@ -54,7 +54,7 @@ namespace WebAPI.Controllers
         #region Get Users
 
         //[Authorize(Roles = "manager")]
-        [HttpPost("getAll")]
+        [HttpPost("")]
         [ProducesResponseType(typeof(ApiResponseDTO<List<UserResponseDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status401Unauthorized)]
@@ -131,7 +131,7 @@ namespace WebAPI.Controllers
         #region Change Password
 
         [Authorize]
-        [HttpPut("change-password")]
+        [HttpPut("password")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
@@ -180,7 +180,7 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Deactive
-        [HttpPut("change-isActive/{id}")]
+        [HttpPut("is-active/{id}")]
         //[Authorize(Roles = $"{nameof(RoleEnum.Manager)}")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]

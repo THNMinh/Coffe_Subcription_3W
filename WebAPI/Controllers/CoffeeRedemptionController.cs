@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class CoffeeRedemptionController : ControllerBase
     {
         private readonly ICoffeeRedemptionService _service;
@@ -11,7 +13,7 @@ namespace WebAPI.Controllers
         {
             _service = service;
         }
-        [HttpPost("/api/EnterCafeCode")]
+        [HttpPost("")]
         public async Task<IActionResult> Create(int subscriptionId, string coffeeCode)
         {
             var createdSub = await _service.ProcessRedemptionAsync(subscriptionId, coffeeCode);

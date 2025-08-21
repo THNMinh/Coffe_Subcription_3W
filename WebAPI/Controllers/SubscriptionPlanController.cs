@@ -19,21 +19,21 @@ namespace WebAPI.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("getAll")]
+        [HttpGet("")]
         public async Task<IActionResult> Get()
         {
             var result = await _service.GetAllSubscriptionPlansAsync();
             return Ok(result);
         }
 
-        [HttpGet("getAllWithDetails")]
+        [HttpGet("details")]
         public async Task<IActionResult> GetWithDetails()
         {
             var result = await _service.GetAllSubscriptionPlanslWithDetailsAsync();
             return Ok(result);
         }
 
-        [HttpGet("getByIdWithDetails/{id}")]
+        [HttpGet("detail/{id}")]
         public async Task<IActionResult> GetByIdWithDetails(int id)
         {
             var coffeeItem = await _service.GetByIdWithDetailsAsync(id);
@@ -55,7 +55,7 @@ namespace WebAPI.Controllers
             return Ok(coffeeItem);
         }
 
-        [HttpPost("create")]
+        [HttpPost("")]
         public async Task<IActionResult> Create([FromBody] CreateSubscriptionPlanDto dto)
         {
             if (dto == null)

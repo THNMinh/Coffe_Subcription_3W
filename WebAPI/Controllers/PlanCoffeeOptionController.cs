@@ -19,7 +19,7 @@ namespace WebAPI.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("getAll")]
+        [HttpGet("")]
         public async Task<IActionResult> Get()
         {
             var result = await _service.GetAllPlanCoffeeOptionAsync();
@@ -37,7 +37,7 @@ namespace WebAPI.Controllers
             return Ok(coffeeItem);
         }
 
-        [HttpPost("create")]
+        [HttpPost("")]
         public async Task<IActionResult> Create([FromBody] CreatePlanCoffeeOptionDto dto)
         {
             if (dto == null)

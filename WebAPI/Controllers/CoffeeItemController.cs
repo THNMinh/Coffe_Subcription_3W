@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
             _cloudinaryService = cloudinaryService;
         }
 
-        [HttpGet("getAll")]
+        [HttpGet("")]
         public async Task<IActionResult> Get()
         {
             var result = await _service.GetAllCoffeeItemAsync();
@@ -42,7 +42,7 @@ namespace WebAPI.Controllers
             return Ok(coffeeItem);
         }
 
-        [HttpPost("create")]
+        [HttpPost("")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Create([FromForm] CoffeeItemRequestDto dto)
         {
@@ -113,23 +113,6 @@ namespace WebAPI.Controllers
             return Ok(_mapper.Map<CoffeeItemResponseDto>(existingCoffee));
         }
 
-        //[HttpPut("update")]
-        //public async Task<IActionResult> Update([FromBody] CreateCoffeeItemDto dto)
-        //{
-        //    if (dto == null)
-        //    {
-        //        return BadRequest("Coffee item cannot be null");
-        //    }
-        //    var coffeeItem = _mapper.Map<CoffeeItem>(dto);
-
-        //    var updated = await _service.UpdateAsync(coffeeItem);
-        //    if (!updated)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok();
-        //}
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -154,7 +137,7 @@ namespace WebAPI.Controllers
         }
 
 
-        [HttpPost("inforForQRcode")]
+        [HttpPost("qrcode")]
         public async Task<IActionResult> ValidateCoffee([FromBody] ValidateCoffeeRequest request)
         {
             var validationResult = await _service.ValidateCoffeeRedemptionAsync(

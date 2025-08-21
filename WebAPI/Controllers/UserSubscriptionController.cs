@@ -20,7 +20,7 @@ namespace WebAPI.Controllers
             _userSubscriptionService = userSubscriptionService;
         }
 
-        [HttpGet("getAll")]
+        [HttpGet("")]
         public async Task<IActionResult> Get()
         {
             var result = await _userSubscriptionService.GetAllUserSubscriptionPlansAsync();
@@ -41,7 +41,7 @@ namespace WebAPI.Controllers
             return Ok(subscription);
         }
 
-        [HttpPost("create")]
+        [HttpPost("")]
         public async Task<IActionResult> Create([FromBody] CreateUserSubscriptionDto dto)
         {
 
