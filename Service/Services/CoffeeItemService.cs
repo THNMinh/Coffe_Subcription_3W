@@ -39,9 +39,31 @@ namespace Service.Services
             return await _coffeeItemRepository.UpdateAsync(chapter);
         }
 
-        public Task<CoffeeSubscriptionInfoDto?> GetCoffeeSubscriptionInfoAsync(int userId, int coffeeId)
+        //public Task<CoffeeSubscriptionInfoDto?> GetCoffeeSubscriptionInfoAsync(int userId, int coffeeId)
+        //{
+        //    return _coffeeItemRepository.GetCoffeeSubscriptionInfoAsync(userId, coffeeId);
+        //}
+
+        public async Task<(bool IsValid, string Message, int? SubscriptionId, string? CoffeCode)> ValidateCoffeeRedemptionAsync(int userId, int coffeeId)
         {
-            return _coffeeItemRepository.GetCoffeeSubscriptionInfoAsync(userId, coffeeId);
+            var info = await _coffeeItemRepository.GetCoffeeSubscriptionInfoAsync(userId, coffeeId);
+
+            if (info == null)
+            {
+                return (false, "Validation error occurred", null, null);
+            }
+
+            if (!info.HasActiveSubscription)
+            {
+                return (false, info.ValidationMessage ?? "No active subscription found", null,null);
+            }
+
+            if (!info.IsCoffeeInPlan)
+            {
+                return (false, info.ValidationMessage ?? "Coffee not available in your plan", null, null);
+            }
+
+            return (true, "Validation successful", info.SubscriptionId, info.CoffeeCode);
         }
 
     }
