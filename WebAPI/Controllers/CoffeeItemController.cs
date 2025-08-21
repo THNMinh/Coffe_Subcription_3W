@@ -4,6 +4,7 @@ using Core.DTOs.Request;
 using Core.Interfaces.Services;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using Service.Services;
 
 namespace WebAPI.Controllers
 {
@@ -152,15 +153,48 @@ namespace WebAPI.Controllers
             return Ok(new { imageUrl = url });
         }
 
-        [HttpGet("getSubAndCafeId")]
-        public async Task<IActionResult> GetSubAndCafeId(int userId, int coffeeId)
+
+        [HttpPost("inforForQRcode")]
+        public async Task<IActionResult> ValidateCoffee([FromBody] ValidateCoffeeRequest request)
         {
-            var coffeeItem = await _service.GetCoffeeSubscriptionInfoAsync(userId, coffeeId);
-            if (coffeeItem == null)
+            var validationResult = await _service.ValidateCoffeeRedemptionAsync(
+                request.UserId,
+                request.CoffeeId);
+
+            if (!validationResult.IsValid)
             {
-                return NotFound();
+                return BadRequest(new
+                {
+                    success = false,
+                    message = validationResult.Message
+                });
             }
-            return Ok(coffeeItem);
+
+            return Ok(new
+            {
+                success = true,
+                message = validationResult.Message,
+                subscriptionId = validationResult.SubscriptionId,
+                coffeeCode = validationResult.CoffeCode,
+                userId = request.UserId,
+            });
         }
+
+        public class ValidateCoffeeRequest
+        {
+            public int UserId { get; set; }
+            public int CoffeeId { get; set; }
+        }
+
+        //[HttpGet("getSubAndCafeId")]
+        //public async Task<IActionResult> GetSubAndCafeId(int userId, int coffeeId)
+        //{
+        //    var coffeeItem = await _service.GetCoffeeSubscriptionInfoAsync(userId, coffeeId);
+        //    if (coffeeItem == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return Ok(coffeeItem);
+        //}
     }
 }
