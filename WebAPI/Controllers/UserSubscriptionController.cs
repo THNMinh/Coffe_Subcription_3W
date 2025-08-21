@@ -96,8 +96,10 @@ namespace WebAPI.Controllers
             {
                 return NotFound();
             }
+            existingChapter.IsDelete = true;
 
-            var result = await _userSubscriptionService.DeleteAsync(id);
+            var result = await _userSubscriptionService.UpdateAsync(existingChapter);
+                //await _userSubscriptionService.DeleteAsync(id);
             if (!result)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error deleting chapter.");

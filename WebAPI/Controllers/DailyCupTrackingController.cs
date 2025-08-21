@@ -133,18 +133,26 @@ namespace WebAPI.Controllers
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            var success = await _service.DeleteAsync(id);
+            var category = await _service.GetByIdAsyncForDelete(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            category.IsDelete = false;
+            var success = await _service.UpdateAsync(category);
+
+            //var success = await _service.DeleteAsync(id);
 
             if (!success)
             {
                 return NotFound(new ApiResponseDTO<object>
                 {
                     Success = false,
-                    Message = "Daily Cup not found"
+                    Message = "Daily cup tracking not found"
                 });
             }
 
-            return Ok(new ApiResponseDTO<object> { Success = true }); // Successfully deleted
+            return Ok(new ApiResponseDTO<object> { Success = true });
         }
 
         #endregion

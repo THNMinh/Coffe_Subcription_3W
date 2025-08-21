@@ -70,6 +70,19 @@ namespace WebAPI.Controllers
             return Ok(coffeeItem);
         }
 
+        [HttpGet("foruser/{id}")]
+        public async Task<IActionResult> GetByForUserId(int id)
+        {
+            var coffeeItem = await _service.GetByIdAsync(id);
+            if (coffeeItem == null)
+            {
+                return NotFound();
+            }
+            var coffeeItemSubresponse = _mapper.Map<CoffeeItemHideCodeResponseDto>(coffeeItem);
+
+            return Ok(coffeeItemSubresponse);
+        }
+
         [HttpPost("")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Create([FromForm] CoffeeItemRequestDto dto)
@@ -144,11 +157,15 @@ namespace WebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _service.DeleteAsync(id);
-            if (!deleted)
+            //var deleted = await _service.DeleteAsync(id);
+            var deleted = await _service.GetByIdAsync(id);
+            if (deleted == null)
             {
                 return NotFound();
             }
+            deleted.IsDelete = true;
+            var success = await _service.UpdateAsync(deleted);
+            
             return Ok();
 
         }
@@ -166,11 +183,11 @@ namespace WebAPI.Controllers
 
 
         [HttpPost("qrcode")]
-        public async Task<IActionResult> ValidateCoffee([FromBody] ValidateCoffeeRequest request)
+        public async Task<IActionResult> ValidateCoffee(int userId, int coffeeId)
         {
             var validationResult = await _service.ValidateCoffeeRedemptionAsync(
-                request.UserId,
-                request.CoffeeId);
+                userId,
+                coffeeId);
 
             if (!validationResult.IsValid)
             {
@@ -187,15 +204,15 @@ namespace WebAPI.Controllers
                 message = validationResult.Message,
                 subscriptionId = validationResult.SubscriptionId,
                 coffeeCode = validationResult.CoffeCode,
-                userId = request.UserId,
+                userId = userId,
             });
         }
 
-        public class ValidateCoffeeRequest
-        {
-            public int UserId { get; set; }
-            public int CoffeeId { get; set; }
-        }
+        //public class ValidateCoffeeRequest
+        //{
+        //    public int UserId { get; set; }
+        //    public int CoffeeId { get; set; }
+        //}
 
         //[HttpGet("getSubAndCafeId")]
         //public async Task<IActionResult> GetSubAndCafeId(int userId, int coffeeId)
