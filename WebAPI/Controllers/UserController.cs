@@ -56,7 +56,7 @@ namespace WebAPI.Controllers
 
         #endregion
 
-        #region Get Users
+        #region Search Users
         //[Authorize(Roles = "manager")]
         [HttpPost("search")]
         [ProducesResponseType(typeof(ApiResponseDTO<PagingResponseDTO<UserResponseDTO>>), StatusCodes.Status200OK)]
@@ -84,6 +84,28 @@ namespace WebAPI.Controllers
             {
                 Success = true,
                 Data = paginatedData
+            });
+        }
+
+        #endregion
+
+        #region Get Users
+        //[Authorize(Roles = "manager")]
+        [HttpGet("")]
+        [ProducesResponseType(typeof(ApiResponseDTO<List<UserResponseDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetUsers()
+        {
+
+            var users = await _service.GetUsersAsync();
+
+            return Ok(new ApiResponseDTO<List<UserResponseDTO>>
+            {
+                Success = true,
+                Data = users
             });
         }
 

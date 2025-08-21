@@ -19,31 +19,25 @@ namespace WebAPI.Controllers
             _mapper = mapper;
         }
 
+        #region Get All
         [HttpGet("")]
         public async Task<IActionResult> Get()
         {
             var result = await _service.GetAllSubscriptionPlansAsync();
             return Ok(result);
         }
+        #endregion
 
+        #region Get All With Detail
         [HttpGet("details")]
         public async Task<IActionResult> GetWithDetails()
         {
             var result = await _service.GetAllSubscriptionPlanslWithDetailsAsync();
             return Ok(result);
         }
+        #endregion
 
-        [HttpGet("detail/{id}")]
-        public async Task<IActionResult> GetByIdWithDetails(int id)
-        {
-            var coffeeItem = await _service.GetByIdWithDetailsAsync(id);
-            if (coffeeItem == null)
-            {
-                return NotFound();
-            }
-            return Ok(coffeeItem);
-        }
-
+        #region Get
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -54,7 +48,22 @@ namespace WebAPI.Controllers
             }
             return Ok(coffeeItem);
         }
+        #endregion
 
+        #region Get Detail
+        [HttpGet("detail/{id}")]
+        public async Task<IActionResult> GetByIdWithDetails(int id)
+        {
+            var coffeeItem = await _service.GetByIdWithDetailsAsync(id);
+            if (coffeeItem == null)
+            {
+                return NotFound();
+            }
+            return Ok(coffeeItem);
+        }
+        #endregion
+
+        #region Create
         [HttpPost("")]
         public async Task<IActionResult> Create([FromBody] CreateSubscriptionPlanDto dto)
         {
@@ -67,8 +76,9 @@ namespace WebAPI.Controllers
             var createdCoffeeItem = await _service.CreateAsync(coffeeItem);
             return Ok(_mapper.Map<SubscriptionPlanReponseDto>(createdCoffeeItem));
         }
+        #endregion
 
-
+        #region Update
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(int id, [FromBody] CreateSubscriptionPlanDto dto)
         {
@@ -87,7 +97,9 @@ namespace WebAPI.Controllers
 
             return Ok(_mapper.Map<SubscriptionPlanReponseDto>(existingSubscriptionPlan));
         }
+        #endregion
 
+        #region Delete
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -100,7 +112,7 @@ namespace WebAPI.Controllers
             var success = await _service.UpdateAsync(deleted);
 
             return Ok();
-
         }
+        #endregion
     }
 }

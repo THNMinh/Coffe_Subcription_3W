@@ -19,13 +19,16 @@ namespace WebAPI.Controllers
             _mapper = mapper;
         }
 
+        #region Get All
         [HttpGet("")]
         public async Task<IActionResult> Get()
         {
             var result = await _service.GetAllPlanCoffeeOptionAsync();
             return Ok(result);
         }
+        #endregion
 
+        #region Get
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -36,7 +39,9 @@ namespace WebAPI.Controllers
             }
             return Ok(coffeeItem);
         }
+        #endregion
 
+        #region Create
         [HttpPost("")]
         public async Task<IActionResult> Create([FromBody] CreatePlanCoffeeOptionDto dto)
         {
@@ -49,8 +54,9 @@ namespace WebAPI.Controllers
             var createdCoffeeItem = await _service.CreateAsync(coffeeItem);
             return Ok(_mapper.Map<PlanCoffeeOptionResponseDto>(createdCoffeeItem));
         }
+        #endregion
 
-
+        #region Update
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(int id, [FromBody] CreatePlanCoffeeOptionDto dto)
         {
@@ -69,7 +75,9 @@ namespace WebAPI.Controllers
 
             return Ok(_mapper.Map<PlanCoffeeOptionResponseDto>(existingCoffee));
         }
+        #endregion
 
+        #region Delete
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -81,9 +89,8 @@ namespace WebAPI.Controllers
             deleted.IsDelete = true;
             var success = await _service.UpdateAsync(deleted);
 
-            return Ok();
-           
-
+            return Ok();         
         }
+        #endregion
     }
 }

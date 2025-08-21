@@ -24,38 +24,27 @@ namespace WebAPI.Controllers
             _service = service;
             _paginationService = paginationService;
         }
+
         #region Get All
-
-        [HttpPost("search")]
-        [ProducesResponseType(typeof(ApiResponseDTO<PagingResponseDTO<CategoryDTO>>), StatusCodes.Status200OK)]
+        //[Authorize(Roles = "manager")]
+        [HttpGet("")]
+        [ProducesResponseType(typeof(ApiResponseDTO<List<CategoryResponseDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Get([FromBody] GetAllRequestDTO requestDTO)
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetCategories()
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new ApiResponseDTO<object>
-                {
-                    Success = false,
-                    Message = "Invalid input",
-                    Errors = ModelState.Keys.Select(key => new ValidationErrorDTO
-                    {
-                        Field = key,
-                        Message = ModelState[key]?.Errors.Select(e => e.ErrorMessage).ToList()
-                    }).ToList()
-                });
-            }
 
-            var (data, totalItems) = await _service.GetAllCategoriesAsync(requestDTO.SearchCondition, requestDTO.PageInfo);
-            var paginatedData = _paginationService.GetPagedData(totalItems, data, requestDTO.PageInfo);
-
-            return Ok(new ApiResponseDTO<PagingResponseDTO<CategoryDTO>>
+            var categories = await _service.GetAllCategoryAsync();
+            var categoryDTOs = categories.Adapt<List<CategoryResponseDTO>>();
+            return Ok(new ApiResponseDTO<List<CategoryResponseDTO>>
             {
                 Success = true,
-                Data = paginatedData
+                Data = categoryDTOs
             });
         }
-
-        #endregion
+        #endregion 
 
         #region Get
 
@@ -164,5 +153,38 @@ namespace WebAPI.Controllers
         }
 
         #endregion
+
+        #region Search
+
+        [HttpPost("search")]
+        [ProducesResponseType(typeof(ApiResponseDTO<PagingResponseDTO<CategoryDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Get([FromBody] GetAllRequestDTO requestDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponseDTO<object>
+                {
+                    Success = false,
+                    Message = "Invalid input",
+                    Errors = ModelState.Keys.Select(key => new ValidationErrorDTO
+                    {
+                        Field = key,
+                        Message = ModelState[key]?.Errors.Select(e => e.ErrorMessage).ToList()
+                    }).ToList()
+                });
+            }
+
+            var (data, totalItems) = await _service.GetAllCategoriesAsync(requestDTO.SearchCondition, requestDTO.PageInfo);
+            var paginatedData = _paginationService.GetPagedData(totalItems, data, requestDTO.PageInfo);
+
+            return Ok(new ApiResponseDTO<PagingResponseDTO<CategoryDTO>>
+            {
+                Success = true,
+                Data = paginatedData
+            });
+        }
+
+        #endregion 
     }
 }

@@ -23,37 +23,26 @@ namespace WebAPI.Controllers
             _service = service;
             _paginationService = paginationService;
         }
+
         #region Get All
-
-        [HttpPost("search")]
-        [ProducesResponseType(typeof(ApiResponseDTO<PagingResponseDTO<DailyCupTrackingDTO>>), StatusCodes.Status200OK)]
+        //[Authorize(Roles = "manager")]
+        [HttpGet("")]
+        [ProducesResponseType(typeof(ApiResponseDTO<List<DailyCupTrackingDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Get([FromBody] GetAllRequestDTO requestDTO)
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Gets()
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new ApiResponseDTO<object>
-                {
-                    Success = false,
-                    Message = "Invalid input",
-                    Errors = ModelState.Keys.Select(key => new ValidationErrorDTO
-                    {
-                        Field = key,
-                        Message = ModelState[key]?.Errors.Select(e => e.ErrorMessage).ToList()
-                    }).ToList()
-                });
-            }
 
-            var (data, totalItems) = await _service.GetAllWithSearch(requestDTO.SearchCondition, requestDTO.PageInfo);
-            var paginatedData = _paginationService.GetPagedData(totalItems, data, requestDTO.PageInfo);
-
-            return Ok(new ApiResponseDTO<PagingResponseDTO<DailyCupTrackingDTO>>
+            var items = await _service.GetAllDailyCupTrackingsAsync();
+            var dtos = items.Adapt<List<DailyCupTrackingDTO>>();
+            return Ok(new ApiResponseDTO<List<DailyCupTrackingDTO>>
             {
                 Success = true,
-                Data = paginatedData
+                Data = dtos
             });
         }
-
         #endregion
 
         #region Get
@@ -159,6 +148,39 @@ namespace WebAPI.Controllers
             }
 
             return Ok(new ApiResponseDTO<object> { Success = true });
+        }
+
+        #endregion
+
+        #region Search
+
+        [HttpPost("search")]
+        [ProducesResponseType(typeof(ApiResponseDTO<PagingResponseDTO<DailyCupTrackingDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Get([FromBody] GetAllRequestDTO requestDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponseDTO<object>
+                {
+                    Success = false,
+                    Message = "Invalid input",
+                    Errors = ModelState.Keys.Select(key => new ValidationErrorDTO
+                    {
+                        Field = key,
+                        Message = ModelState[key]?.Errors.Select(e => e.ErrorMessage).ToList()
+                    }).ToList()
+                });
+            }
+
+            var (data, totalItems) = await _service.GetAllWithSearch(requestDTO.SearchCondition, requestDTO.PageInfo);
+            var paginatedData = _paginationService.GetPagedData(totalItems, data, requestDTO.PageInfo);
+
+            return Ok(new ApiResponseDTO<PagingResponseDTO<DailyCupTrackingDTO>>
+            {
+                Success = true,
+                Data = paginatedData
+            });
         }
 
         #endregion

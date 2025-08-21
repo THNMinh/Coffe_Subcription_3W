@@ -5,6 +5,7 @@ using Core.DTOs.Request;
 using Core.DTOs.Response;
 using Core.Interfaces.Services;
 using Core.Models;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services;
 
@@ -28,35 +29,28 @@ namespace WebAPI.Controllers
             _paginationService = paginationService;
         }
 
-        [HttpPost("search")]
-        [ProducesResponseType(typeof(ApiResponseDTO<PagingResponseDTO<CoffeeItemDTO>>), StatusCodes.Status200OK)]
+        #region Get All
+        //[Authorize(Roles = "manager")]
+        [HttpGet("")]
+        [ProducesResponseType(typeof(ApiResponseDTO<List<CoffeeItemDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Get([FromBody] GetAllRequestDTO requestDTO)
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Gets()
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new ApiResponseDTO<object>
-                {
-                    Success = false,
-                    Message = "Invalid input",
-                    Errors = ModelState.Keys.Select(key => new ValidationErrorDTO
-                    {
-                        Field = key,
-                        Message = ModelState[key]?.Errors.Select(e => e.ErrorMessage).ToList()
-                    }).ToList()
-                });
-            }
 
-            var (data, totalItems) = await _service.GetAllCoffeeItemsAsync(requestDTO.SearchCondition, requestDTO.PageInfo);
-            var paginatedData = _paginationService.GetPagedData(totalItems, data, requestDTO.PageInfo);
-
-            return Ok(new ApiResponseDTO<PagingResponseDTO<CoffeeItemDTO>>
+            var items = await _service.GetAllCoffeeItemAsync();
+            var dtos = items.Adapt<List<CoffeeItemDTO>>();
+            return Ok(new ApiResponseDTO<List<CoffeeItemDTO>>
             {
                 Success = true,
-                Data = paginatedData
+                Data = dtos
             });
         }
+        #endregion
 
+        #region Get
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -67,20 +61,9 @@ namespace WebAPI.Controllers
             }
             return Ok(coffeeItem);
         }
+        #endregion
 
-        [HttpGet("foruser/{id}")]
-        public async Task<IActionResult> GetByForUserId(int id)
-        {
-            var coffeeItem = await _service.GetByIdAsync(id);
-            if (coffeeItem == null)
-            {
-                return NotFound();
-            }
-            var coffeeItemSubresponse = _mapper.Map<CoffeeItemHideCodeResponseDto>(coffeeItem);
-
-            return Ok(coffeeItemSubresponse);
-        }
-
+        #region Create
         [HttpPost("")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Create([FromForm] CoffeeItemRequestDto dto)
@@ -101,8 +84,9 @@ namespace WebAPI.Controllers
             var createdCoffeeItem = await _service.CreateAsync(coffeeItem);
             return Ok(createdCoffeeItem);
         }
+        #endregion
 
-
+        #region Update
         [HttpPut("{id}")]
         [Consumes("multipart/form-data")]
         public async Task<ActionResult> Update(int id, [FromForm] UpdateCoffeeItemDTO dto)
@@ -151,7 +135,9 @@ namespace WebAPI.Controllers
 
             return Ok(_mapper.Map<CoffeeItemResponseDto>(existingCoffee));
         }
+        #endregion
 
+        #region Delete
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -167,19 +153,55 @@ namespace WebAPI.Controllers
             return Ok();
 
         }
+        #endregion
 
-        [HttpPost("image")]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadImage([FromForm] UploadImageRequestDTO request)
+        #region Search
+        [HttpPost("search")]
+        [ProducesResponseType(typeof(ApiResponseDTO<PagingResponseDTO<CoffeeItemDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Get([FromBody] GetAllRequestDTO requestDTO)
         {
-            if (request.File == null || request.File.Length == 0)
-                return BadRequest("No file uploaded.");
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponseDTO<object>
+                {
+                    Success = false,
+                    Message = "Invalid input",
+                    Errors = ModelState.Keys.Select(key => new ValidationErrorDTO
+                    {
+                        Field = key,
+                        Message = ModelState[key]?.Errors.Select(e => e.ErrorMessage).ToList()
+                    }).ToList()
+                });
+            }
 
-            var url = await _cloudinaryService.UploadImageAsync(request.File, "coffee_sub/images");
-            return Ok(new { imageUrl = url });
+            var (data, totalItems) = await _service.GetAllCoffeeItemsAsync(requestDTO.SearchCondition, requestDTO.PageInfo);
+            var paginatedData = _paginationService.GetPagedData(totalItems, data, requestDTO.PageInfo);
+
+            return Ok(new ApiResponseDTO<PagingResponseDTO<CoffeeItemDTO>>
+            {
+                Success = true,
+                Data = paginatedData
+            });
         }
+        #endregion
 
+        #region Get For User
+        [HttpGet("foruser/{id}")]
+        public async Task<IActionResult> GetByForUserId(int id)
+        {
+            var coffeeItem = await _service.GetByIdAsync(id);
+            if (coffeeItem == null)
+            {
+                return NotFound();
+            }
+            var coffeeItemSubresponse = _mapper.Map<CoffeeItemHideCodeResponseDto>(coffeeItem);
 
+            return Ok(coffeeItemSubresponse);
+        }
+        #endregion
+
+        #region QR Code
         [HttpPost("qrcode")]
         public async Task<IActionResult> ValidateCoffee(int userId, int coffeeId)
         {
@@ -205,6 +227,22 @@ namespace WebAPI.Controllers
                 userId = userId,
             });
         }
+        #endregion
+
+        #region Upload Image
+        [HttpPost("image")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadImage([FromForm] UploadImageRequestDTO request)
+        {
+            if (request.File == null || request.File.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            var url = await _cloudinaryService.UploadImageAsync(request.File, "coffee_sub/images");
+            return Ok(new { imageUrl = url });
+        }
+        #endregion
+
+
 
         //public class ValidateCoffeeRequest
         //{
