@@ -64,15 +64,45 @@ namespace WebAPI.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, [FromBody] CreateCoffeeItemDto dto)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult> Update(int id, [FromForm] UpdateCoffeeItemDTO dto)
         {
             var existingCoffee = await _service.GetByIdAsync(id);
             if (existingCoffee == null)
             {
                 return NotFound();
             }
-            _mapper.Map(dto, existingCoffee);
-
+            bool isUpdated = false;
+            if (!string.IsNullOrWhiteSpace(dto.CoffeeName))
+            {
+                existingCoffee.CoffeeName = dto.CoffeeName;
+                isUpdated = true;
+            }
+            if (!string.IsNullOrWhiteSpace(dto.Description))
+            {
+                existingCoffee.Description = dto.Description;
+                isUpdated = true;
+            }
+            if (!string.IsNullOrWhiteSpace(dto.Code))
+            {
+                existingCoffee.Code = dto.Code;
+                isUpdated = true;
+            }
+            if (dto.IsActive.HasValue)
+            {
+                existingCoffee.IsActive = dto.IsActive.Value;
+                isUpdated = true;
+            }
+            if (dto.Image != null && dto.Image.Length > 0)
+            {
+                var imageUrl = await _cloudinaryService.UploadImageAsync(dto.Image, "coffee_items");
+                existingCoffee.ImageUrl = imageUrl;
+                isUpdated = true;
+            }
+            if (!isUpdated)
+            {
+                return BadRequest("No change have been made"); 
+            }
             var result = await _service.UpdateAsync(existingCoffee);
             if (!result)
             {
