@@ -1,6 +1,6 @@
 ﻿namespace Core.Models;
 
-public partial class PaymentTransaction
+public partial class PaymentTransaction : Entity
 {
     public int TransactionId { get; set; }
 

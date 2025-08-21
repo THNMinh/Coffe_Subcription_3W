@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Core.DTOs;
 using Core.DTOs.CoffeeItemDTO;
 using Core.DTOs.Request;
+using Core.DTOs.Response;
 using Core.Interfaces.Services;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -14,21 +16,47 @@ namespace WebAPI.Controllers
     {
         private readonly ICoffeeItemService _service;
         private readonly IMapper _mapper;
+        private readonly IPaginationService<CoffeeItemDTO> _paginationService;
         private readonly ICloudinaryService _cloudinaryService;
 
         public CoffeeItemController(ICoffeeItemService service, IMapper mapper,
-            ICloudinaryService cloudinaryService)
+            ICloudinaryService cloudinaryService, IPaginationService<CoffeeItemDTO> paginationService)
         {
             _service = service;
             _mapper = mapper;
             _cloudinaryService = cloudinaryService;
+            _paginationService = paginationService;
         }
 
-        [HttpGet("")]
-        public async Task<IActionResult> Get()
+        [HttpPost("search")]
+        [ProducesResponseType(typeof(ApiResponseDTO<PagingResponseDTO<CoffeeItemDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Get([FromBody] GetAllRequestDTO requestDTO)
         {
-            var result = await _service.GetAllCoffeeItemAsync();
-            return Ok(result);
+            //var result = await _service.GetAllCoffeeItemAsync();
+            //return Ok(result);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponseDTO<object>
+                {
+                    Success = false,
+                    Message = "Invalid input",
+                    Errors = ModelState.Keys.Select(key => new ValidationErrorDTO
+                    {
+                        Field = key,
+                        Message = ModelState[key]?.Errors.Select(e => e.ErrorMessage).ToList()
+                    }).ToList()
+                });
+            }
+
+            var (data, totalItems) = await _service.GetAllCoffeeItemsAsync(requestDTO.SearchCondition, requestDTO.PageInfo);
+            var paginatedData = _paginationService.GetPagedData(totalItems, data, requestDTO.PageInfo);
+
+            return Ok(new ApiResponseDTO<PagingResponseDTO<CoffeeItemDTO>>
+            {
+                Success = true,
+                Data = paginatedData
+            });
         }
 
         [HttpGet("{id}")]

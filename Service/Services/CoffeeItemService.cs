@@ -1,7 +1,12 @@
-﻿using Core.DTOs.CoffeeItemDTO;
+﻿using System.Linq.Expressions;
+using Core.DTOs.CoffeeItemDTO;
+using Core.DTOs.Request;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
+using Core.Utils;
+using Mapster;
+using Repository.Repositories;
 
 namespace Service.Services
 {
@@ -66,5 +71,27 @@ namespace Service.Services
             return (true, "Validation successful", info.SubscriptionId, info.CoffeeCode);
         }
 
+        public async Task<(IEnumerable<CoffeeItemDTO>, int totalItems)> GetAllCoffeeItemsAsync(Search searchCondition, PageInfoRequestDTO pageInfo)
+        {
+            // Start with a base filter that is always true
+            Expression<Func<CoffeeItem, bool>> filter = u => true;
+            // Apply filters dynamically
+            if (!string.IsNullOrEmpty(searchCondition.Keyword))
+            {
+                string keyword = searchCondition.Keyword.ToLower();
+                filter = ExpressionUtils.AddFilter(filter, c =>
+                    c.CoffeeName.ToLower().Contains(keyword) ||
+                    (c.Description != null && c.Description.ToLower().Contains(keyword)));
+            }
+            filter = ExpressionUtils.AddFilter(filter, c => c.IsDelete == searchCondition.IsDelete);
+
+            var items = await _coffeeItemRepository.GetWithPaginationAsync(pageInfo, filter);
+            int totalItems = await _coffeeItemRepository.CountAsync(filter);
+
+            List<CoffeeItemDTO> itemDTOs = items.Select(items => items.Adapt<CoffeeItemDTO>()).ToList();
+
+            return (itemDTOs, totalItems);
+
+        }
     }
 }

@@ -7,5 +7,7 @@
         public const int PASSWORD_MIN_LENGTH = 6;
         public const int RANDOM_PASSWORD_LENGTH = 20;
         public const string COMPANY_NAME = "CoffeeSubscription";
+        public const int PAGE_NUM_DEFAULT = 1;
+        public const int PAGE_SIZE_DEFAULT = 10;
     }
 }

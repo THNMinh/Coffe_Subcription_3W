@@ -1,6 +1,6 @@
 ﻿namespace Core.Models;
 
-public partial class PlanCoffeeOption
+public partial class PlanCoffeeOption : Entity
 {
     public int OptionId { get; set; }
 

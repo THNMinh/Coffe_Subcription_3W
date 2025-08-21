@@ -1,10 +1,14 @@
-﻿using Core.Interfaces.Repository;
+﻿using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Linq;
+using Core.Interfaces.Repository;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
+using Core.DTOs.Request;
 
 namespace Repository.Repositories
 {
-    public class GenericRepository<T, TKey> : IGenericRepository<T, TKey> where T : class where TKey : IEquatable<TKey>
+    public class GenericRepository<T, TKey> : IGenericRepository<T, TKey> where T : Entity where TKey : IEquatable<TKey>
     {
 
         private readonly CoffeSubContext _dbContext;
@@ -62,6 +66,43 @@ namespace Repository.Repositories
             {
                 return false;
             }
+        }
+
+        public Task<int> CountAsync(Expression<Func<T, bool>>? filter = null, CancellationToken cancellationToken = default)
+        {
+            IQueryable<T> query = _dbSet;
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+            return query.Where(x => x.IsDelete == false).CountAsync(cancellationToken);
+        }     
+        
+        public async Task<IEnumerable<T>> GetWithPaginationAsync(PageInfoRequestDTO pageInfo, 
+            Expression<Func<T, bool>>? filter = null, string? includeProperties = null, CancellationToken cancellationToken = default)
+        {
+            int pageNum = pageInfo.PageNum;
+            int pageSize = pageInfo.PageSize;
+            IQueryable<T> query = _dbSet;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            if (pageNum > 0 && pageSize > 0)
+            {
+                query = query.Skip((pageNum - 1) * pageSize).Take(pageSize);
+            }
+
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var incluProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(incluProp);
+                }
+            }
+            return await query.ToListAsync(cancellationToken);
         }
     }
 }

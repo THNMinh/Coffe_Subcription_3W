@@ -1,6 +1,6 @@
 ﻿namespace Core.Models;
 
-public partial class CoffeeItem
+public partial class CoffeeItem : Entity
 {
     public int CoffeeId { get; set; }
 

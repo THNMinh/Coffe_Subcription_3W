@@ -1,6 +1,6 @@
 ﻿namespace Core.Models;
 
-public partial class UserSubscription
+public partial class UserSubscription : Entity
 {
     public int SubscriptionId { get; set; }
 

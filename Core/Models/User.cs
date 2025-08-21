@@ -8,7 +8,7 @@ namespace Core.Models
     {
         [Key]
         [Column("user_id")]
-        public override int Id { get; set; }
+        public int Id { get; set; }
 
         [Column("username")]
         public string Username { get; set; } = null!;

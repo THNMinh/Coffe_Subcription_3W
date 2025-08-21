@@ -1,6 +1,6 @@
 ﻿namespace Core.Models;
 
-public partial class DailyCupTracking
+public partial class DailyCupTracking : Entity
 {
     public int TrackingId { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using Core.DTOs.CoffeeItemDTO;
+using Core.DTOs.Request;
 using Core.Models;
 
 namespace Core.Interfaces.Services
@@ -19,5 +20,6 @@ namespace Core.Interfaces.Services
 
         Task<(bool IsValid, string Message, int? SubscriptionId, string? CoffeCode)> ValidateCoffeeRedemptionAsync(int userId, int coffeeId);
 
+        Task<(IEnumerable<CoffeeItemDTO>, int totalItems)> GetAllCoffeeItemsAsync(Search searchCondition, PageInfoRequestDTO pageInfo);
     }
 }
