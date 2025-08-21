@@ -19,6 +19,6 @@ namespace Core.DTOs.Request
     public class Search
     {
         public string? Keyword { get; set; }
-        public bool IsDelete { get; set; }
+        public bool IsDelete { get; set; } = false;
     }
 }

@@ -33,8 +33,6 @@ namespace WebAPI.Controllers
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get([FromBody] GetAllRequestDTO requestDTO)
         {
-            //var result = await _service.GetAllCoffeeItemAsync();
-            //return Ok(result);
             if (!ModelState.IsValid)
             {
                 return BadRequest(new ApiResponseDTO<object>

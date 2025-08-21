@@ -1,4 +1,5 @@
 ﻿using Core.DTOs;
+using Core.DTOs.CoffeeItemDTO;
 using Core.DTOs.Request;
 using Core.DTOs.Response;
 using Core.Interfaces.Services;
@@ -13,17 +14,21 @@ namespace WebAPI.Controllers
     public class DailyCupTrackingController : ControllerBase
     {
         private readonly IDailyCupTrackingService _service;
+        private readonly IPaginationService<DailyCupTrackingDTO> _paginationService;
 
-        public DailyCupTrackingController(IDailyCupTrackingService service)
+
+        public DailyCupTrackingController(IDailyCupTrackingService service, 
+            IPaginationService<DailyCupTrackingDTO> paginationService)
         {
             _service = service;
+            _paginationService = paginationService;
         }
         #region Get All
 
-        [HttpGet("")]
-        [ProducesResponseType(typeof(ApiResponseDTO<DailyCupTrackingDTO>), StatusCodes.Status200OK)]
+        [HttpPost("search")]
+        [ProducesResponseType(typeof(ApiResponseDTO<PagingResponseDTO<DailyCupTrackingDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> Get([FromBody] GetAllRequestDTO requestDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -39,12 +44,13 @@ namespace WebAPI.Controllers
                 });
             }
 
-            var trackings = await _service.GetAllDailyCupTrackingsAsync();
+            var (data, totalItems) = await _service.GetAllWithSearch(requestDTO.SearchCondition, requestDTO.PageInfo);
+            var paginatedData = _paginationService.GetPagedData(totalItems, data, requestDTO.PageInfo);
 
-            return Ok(new ApiResponseDTO<List<DailyCupTrackingDTO>>
+            return Ok(new ApiResponseDTO<PagingResponseDTO<DailyCupTrackingDTO>>
             {
                 Success = true,
-                Data = trackings
+                Data = paginatedData
             });
         }
 

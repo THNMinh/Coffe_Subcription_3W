@@ -1,4 +1,5 @@
 ﻿using Core.DTOs;
+using Core.DTOs.Request;
 using Core.Models;
 
 namespace Core.Interfaces.Services
@@ -14,9 +15,10 @@ namespace Core.Interfaces.Services
 
         Task<bool> DeleteAsync(int id);
 
-
-
         Task<DailyCupTracking> GetOrCreateDailyTrackingAsync(int subscriptionId, DateOnly date);
+
         Task IncrementUsageAsync(int trackingId);
+
+        Task<(IEnumerable<DailyCupTrackingDTO>, int totalItems)> GetAllWithSearch(Search searchCondition, PageInfoRequestDTO pageInfo);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Linq.Expressions;
+using System.Security.Cryptography;
 using Core.Constants;
 using Core.DTOs;
 using Core.DTOs.Request;
@@ -7,6 +8,7 @@ using Core.DTOs.UserSubscriptionDTO;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
+using Core.Utils;
 using Mapster;
 using Microsoft.AspNetCore.Http;
 
@@ -213,6 +215,51 @@ namespace Service.Services
             if (user == null) return false;
 
             user.IsActive = active;
+            user.UpdatedAt = DateTime.UtcNow;
+            user.CreatedAt = DateTime.SpecifyKind(user.CreatedAt, DateTimeKind.Utc);
+            return await _userRepository.UpdateAsync(user);
+        }
+
+        public async Task<(IEnumerable<UserResponseDTO>, int totalItems)> GetAllWithSearch (Search searchCondition, PageInfoRequestDTO pageInfo)
+        {
+            // Start with a base filter that is always true
+            Expression<Func<User, bool>> filter = u => true;
+            // Apply filters dynamically
+            if (!string.IsNullOrEmpty(searchCondition.Keyword))
+            {
+                string keyword = searchCondition.Keyword.ToLower();
+                filter = ExpressionUtils.AddFilter(filter, c =>
+                    c.Username.ToLower().Contains(keyword) ||
+                    (c.FullName != null && c.FullName.ToLower().Contains(keyword) ||
+                    (c.Email != null && c.Email.ToLower().Contains(keyword))));
+            }
+            filter = ExpressionUtils.AddFilter(filter, c => c.IsDelete == searchCondition.IsDelete);
+
+            var items = await _userRepository.GetWithPaginationAsync(pageInfo, filter);
+            int totalItems = await _userRepository.CountAsync(filter);
+
+            List<UserResponseDTO> itemDTOs = items.Select(u =>
+            {
+                var dto = u.Adapt<UserResponseDTO>();
+                dto.Role = u.RoleId switch
+                {
+                    1 => "Member",
+                    2 => "Staff",
+                    3 => "Manager",
+                    4 => "Admin",
+                    0 => "Unverified"
+                };
+                return dto;
+            }).ToList();
+
+            return (itemDTOs, totalItems);
+        }
+
+        public async Task<bool> VerifyUser(int id)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user == null) return false;
+            user.RoleId = 1;
             user.UpdatedAt = DateTime.UtcNow;
             user.CreatedAt = DateTime.SpecifyKind(user.CreatedAt, DateTimeKind.Utc);
             return await _userRepository.UpdateAsync(user);

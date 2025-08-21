@@ -6,6 +6,8 @@ using Core.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Mapster;
+using Core.DTOs.CoffeeItemDTO;
+using Service.Services;
 
 namespace WebAPI.Controllers
 {
@@ -14,26 +16,42 @@ namespace WebAPI.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _service;
+        private readonly IPaginationService<CategoryDTO> _paginationService;
 
-        public CategoryController(ICategoryService service)
+
+        public CategoryController(ICategoryService service, IPaginationService<CategoryDTO> paginationService)
         {
             _service = service;
+            _paginationService = paginationService;
         }
         #region Get All
 
-        [HttpGet("")]
-        [ProducesResponseType(typeof(ApiResponseDTO<CategoryResponseDTO>), StatusCodes.Status200OK)]
+        [HttpPost("search")]
+        [ProducesResponseType(typeof(ApiResponseDTO<PagingResponseDTO<CategoryDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetAll()
-        {       
-            var categories = await _service.GetAllCategoryAsync();
+        public async Task<IActionResult> Get([FromBody] GetAllRequestDTO requestDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponseDTO<object>
+                {
+                    Success = false,
+                    Message = "Invalid input",
+                    Errors = ModelState.Keys.Select(key => new ValidationErrorDTO
+                    {
+                        Field = key,
+                        Message = ModelState[key]?.Errors.Select(e => e.ErrorMessage).ToList()
+                    }).ToList()
+                });
+            }
 
-            List<CategoryResponseDTO> categoryDTOs = categories.Adapt<List<CategoryResponseDTO>>();
+            var (data, totalItems) = await _service.GetAllCategoriesAsync(requestDTO.SearchCondition, requestDTO.PageInfo);
+            var paginatedData = _paginationService.GetPagedData(totalItems, data, requestDTO.PageInfo);
 
-            return Ok(new ApiResponseDTO<List<CategoryResponseDTO>>
+            return Ok(new ApiResponseDTO<PagingResponseDTO<CategoryDTO>>
             {
                 Success = true,
-                Data = categoryDTOs
+                Data = paginatedData
             });
         }
 

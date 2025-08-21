@@ -19,6 +19,8 @@ namespace Core.Interfaces.Services
         Task<List<UserResponseDTO>> GetUsersAsync();
         Task<bool> UpdateAsync(UserRequestDTO user);
         Task<bool> ChangeUserActive(int id, bool active);
+        Task<(IEnumerable<UserResponseDTO>, int totalItems)> GetAllWithSearch(Search searchCondition, PageInfoRequestDTO pageInfo);
+        Task<bool> VerifyUser(int id);
         //Task<bool> ChangeUserStatusAsync(ChangeUserStatusRequestDTO requestDTO);
         //Task<bool> UpdateRoleAsync(UpdateRoleRequestDTO changeUserStatusDTO);
     }
