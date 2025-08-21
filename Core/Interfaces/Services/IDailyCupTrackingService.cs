@@ -8,6 +8,7 @@ namespace Core.Interfaces.Services
     {
         Task<List<DailyCupTrackingDTO>> GetAllDailyCupTrackingsAsync();
         Task<DailyCupTrackingDTO?> GetByIdAsync(int id);
+        Task<DailyCupTracking?> GetByIdAsyncForDelete(int id);
 
         Task<DailyCupTracking> CreateAsync(DailyCupTracking tracking);
 

@@ -141,7 +141,15 @@ namespace WebAPI.Controllers
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            var success = await _service.DeleteAsync(id);
+            var category = await _service.GetByIdAsync(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            category.IsDelete = false;
+            var success = await _service.UpdateAsync(category);
+
+            //var success = await _service.DeleteAsync(id);
 
             if (!success)
             {

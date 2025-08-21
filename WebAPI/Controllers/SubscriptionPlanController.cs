@@ -91,11 +91,14 @@ namespace WebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _service.DeleteAsync(id);
-            if (!deleted)
+            var deleted = await _service.GetByIdAsync(id);
+            if (deleted == null)
             {
                 return NotFound();
             }
+            deleted.IsDelete = true;
+            var success = await _service.UpdateAsync(deleted);
+
             return Ok();
 
         }

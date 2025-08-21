@@ -127,6 +127,13 @@ namespace Service.Services
             return dtos;
         }
 
+        public async Task<DailyCupTracking?> GetByIdAsyncForDelete(int id)
+        {
+            var tracking = await _repo.GetByIdAsync(id);
+            //var dtos = tracking.Adapt<DailyCupTrackingDTO>();
+            return tracking;
+        }
+
         public async Task<DailyCupTracking> CreateAsync(DailyCupTracking tracking)
         {
             await _repo.CreateAsync(tracking);
