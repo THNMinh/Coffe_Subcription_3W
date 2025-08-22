@@ -145,8 +145,18 @@ namespace Backend_API_Testing.Controllers
                         if (transaction != null)
                         {
                             transaction.TransactionNo = "success";
+
+                            // Explicitly force UTC
+                            transaction.PaymentTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
+
+                            if (transaction.CreatedAt.Kind == DateTimeKind.Unspecified)
+                            {
+                                transaction.CreatedAt = DateTime.SpecifyKind(transaction.CreatedAt, DateTimeKind.Utc);
+                            }
+
                             var success = await _paymentTransactionService.UpdateAsync(transaction);
                             var plan = await _subscriptionPlanRepository.GetByIdAsync(int.Parse(transaction.OrderId));
+
                             if (!success)
                             {
                                 return NotFound(new ApiResponseDTO<object>
@@ -161,7 +171,7 @@ namespace Backend_API_Testing.Controllers
                                 {
                                     UserId = transaction.UserId,
                                     PlanId = int.Parse(transaction.OrderId),
-                                     
+                
                                     StartDate = DateTime.UtcNow,
                                     EndDate = DateTime.UtcNow.AddDays(30), // Assuming a plan with 30 days duration
                                     RemainingCups = plan.TotalCups, // Assuming a plan with 30 cups per month

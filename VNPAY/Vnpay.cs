@@ -137,7 +137,7 @@ namespace VNPAY
                     ? "Không xác định"
                     : vnp_CardType,
                 Timestamp = string.IsNullOrEmpty(vnp_PayDate)
-                    ? DateTime.Now
+                    ? DateTime.UtcNow
                     : DateTime.ParseExact(vnp_PayDate, "yyyyMMddHHmmss", CultureInfo.InvariantCulture),
                 TransactionStatus = new TransactionStatus
                 {
