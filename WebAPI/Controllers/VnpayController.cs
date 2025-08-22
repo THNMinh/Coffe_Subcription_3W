@@ -1,6 +1,11 @@
-﻿using Core.Interfaces.Repositories;
+﻿using AutoMapper;
+using Core.DTOs.Response;
+using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Service.Services;
 using VNPAY;
 using VNPAY.Enums;
 using VNPAY.Models;
@@ -16,8 +21,15 @@ namespace Backend_API_Testing.Controllers
         private readonly IConfiguration _configuration;
         private readonly ISubscriptionPlanRepository _subscriptionPlanRepository;
         private readonly IPaymentTransactionRepository _paymentTransactionRepository;
+        private readonly IPaymentTransactionService _paymentTransactionService;
+        private readonly IMapper _mapper;
 
-        public VnpayController(IVnpay vnPayservice, IConfiguration configuration, ISubscriptionPlanRepository subscriptionPlanRepository, IPaymentTransactionRepository paymentTransactionRepository)
+        private readonly IUserSubcriptionService _userSubscriptionService;
+
+
+        public VnpayController(IVnpay vnPayservice, IConfiguration configuration, ISubscriptionPlanRepository subscriptionPlanRepository, IPaymentTransactionRepository paymentTransactionRepository,
+            IPaymentTransactionService paymentTransactionService,
+            IMapper mapper, IUserSubcriptionService userSubscriptionService)
         {
             _vnpay = vnPayservice;
             _configuration = configuration;
@@ -26,6 +38,9 @@ namespace Backend_API_Testing.Controllers
 
             _subscriptionPlanRepository = subscriptionPlanRepository;
             _paymentTransactionRepository = paymentTransactionRepository;
+            _paymentTransactionService = paymentTransactionService;
+            _mapper = mapper;
+            _userSubscriptionService = userSubscriptionService;
         }
 
         /// <summary>
@@ -120,10 +135,43 @@ namespace Backend_API_Testing.Controllers
                 try
                 {
                     var paymentResult = await _vnpay.GetPaymentResultAsync(Request.Query); // Await the Task to get the PaymentResult object
-
+                    var transaction = await _paymentTransactionService.GetByOrderIdAsync(paymentResult.PaymentId.ToString());
+                    if (transaction == null)
+                    {
+                        return NotFound();
+                    }
                     if (paymentResult.IsSuccess)
                     {
-                        return Ok(paymentResult);
+                        if (transaction != null)
+                        {
+                            transaction.TransactionNo = "success";
+                            var success = await _paymentTransactionService.UpdateAsync(transaction);
+                            var plan = await _subscriptionPlanRepository.GetByIdAsync(int.Parse(transaction.OrderId));
+                            if (!success)
+                            {
+                                return NotFound(new ApiResponseDTO<object>
+                                {
+                                    Success = false,
+                                    Message = "Update fail"
+                                });
+                            }
+                            else {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                                var userSub = new UserSubscription
+                                {
+                                    UserId = transaction.UserId,
+                                    PlanId = int.Parse(transaction.OrderId),
+                                     
+                                    StartDate = DateTime.UtcNow,
+                                    EndDate = DateTime.UtcNow.AddDays(30), // Assuming a plan with 30 days duration
+                                    RemainingCups = plan.TotalCups, // Assuming a plan with 30 cups per month
+                                    IsActive = true
+                                };
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+                                var createdSub = await _userSubscriptionService.CreateAsync(userSub);
+                            }
+                        }
+                        return Ok(transaction);
                     }
 
                     return BadRequest(paymentResult);
@@ -135,6 +183,17 @@ namespace Backend_API_Testing.Controllers
             }
 
             return NotFound("Không tìm thấy thông tin thanh toán.");
+        }
+
+
+         //[Authorize(Roles = "manager")]
+        [HttpGet("getallpayment")]
+         
+        public async Task<IActionResult> GetCategories()
+        {
+
+            var categories = await _paymentTransactionService.GetAllPaymentTransactionPlansAsync();
+             return Ok(categories);
         }
     }
 }

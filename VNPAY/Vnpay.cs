@@ -158,16 +158,16 @@ namespace VNPAY
                 }
             };
 
-            var transaction = await _paymentTransactionService.GetByOrderIdAsync(paymentResult.PaymentId.ToString());
+            //var transaction = await _paymentTransactionService.GetByOrderIdAsync(paymentResult.PaymentId.ToString());
 
-            if (paymentResult.IsSuccess)
-            {
-                if (transaction != null)
-                {
-                    transaction.TransactionStatus = "success";
-                    await _paymentTransactionService.UpdateAsync(transaction);
-                }
-            }
+            //if (paymentResult.IsSuccess)
+            //{
+            //    if (transaction != null)
+            //    {
+            //        transaction.TransactionStatus = "success";
+            //        await _paymentTransactionService.UpdateAsync(transaction);
+            //    }
+            //}
 
             return paymentResult;
         }
