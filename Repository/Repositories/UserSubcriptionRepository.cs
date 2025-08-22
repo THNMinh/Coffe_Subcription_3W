@@ -12,6 +12,29 @@ namespace Repository.Repositories
             _context = context;
         }
 
+        //public async Task<List<UserSubscription>> GetActiveSubscriptionsAsync(DateTime forDate)
+        //{
+        //    return await _context.UserSubscriptions
+        //        .Include(us => us.Plan)
+        //        .Where(us => us.IsActive &&
+        //                    us.StartDate.ToDateTime(TimeOnly.MinValue) <= forDate &&
+        //                    us.EndDate.ToDateTime(TimeOnly.MinValue) >= forDate &&
+        //                    us.RemainingCups > 0)
+        //        .ToListAsync();
+        //}
+
+        //public async Task<UserSubscription?> GetActiveSubscriptionAsync(int subscriptionId)
+        //{
+        //    return await _context.UserSubscriptions
+        //        .Include(us => us.Plan)
+        //        .ThenInclude(p => p.SubscriptionTimeWindows)
+        //        .FirstOrDefaultAsync(us =>
+        //            us.SubscriptionId == subscriptionId &&
+        //            us.IsActive &&
+        //            us.EndDate.ToDateTime(TimeOnly.MinValue) >= DateTime.UtcNow &&
+        //            us.RemainingCups > 0);
+        //}
+
         public async Task<List<UserSubscription>> GetActiveSubscriptionsAsync(DateTime forDate)
         {
             return await _context.UserSubscriptions
