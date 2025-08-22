@@ -144,7 +144,7 @@ namespace Backend_API_Testing.Controllers
                     {
                         if (transaction != null)
                         {
-                            transaction.TransactionNo = "success";
+                            transaction.TransactionStatus = "success";
 
                             // Explicitly force UTC
                             transaction.PaymentTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
@@ -173,7 +173,7 @@ namespace Backend_API_Testing.Controllers
                                     PlanId = int.Parse(transaction.OrderId),
                 
                                     StartDate = DateTime.UtcNow,
-                                    EndDate = DateTime.UtcNow.AddDays(30), // Assuming a plan with 30 days duration
+                                    EndDate = DateTime.UtcNow.AddDays(plan.DurationDays), // Assuming a plan with 30 days duration
                                     RemainingCups = plan.TotalCups, // Assuming a plan with 30 cups per month
                                     IsActive = true
                                 };
