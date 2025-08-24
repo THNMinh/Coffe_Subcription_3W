@@ -111,7 +111,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDTO request)
         {
-            string idToken = request?.Token;
+            string idToken = request?.idToken;
             if (string.IsNullOrEmpty(idToken))
                 return BadRequest(new ApiResponseDTO<object>
                 {
@@ -133,11 +133,7 @@ namespace WebAPI.Controllers
                 if (user == null)
                 {
                     // Generate a new password
-                    string newPassword = _userService.GenerateRandomPassword();
-
-                    // Parallelize the password update and email sending
-                    var sendEmailTask = _emailService.SendEmailAsync(user.Email, "Your New Password", 
-                        $"Your new password for this {email} is: {newPassword}");
+                    string newPassword = _userService.GenerateRandomPassword();                
                     var newUser = new RegisterRequestDTO
                     {
                         Email = email,
