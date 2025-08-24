@@ -36,6 +36,11 @@ namespace Service.Services
                 var tomorrow = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
 
                 // Get active subscriptions that will be valid tomorrow
+                //var activeSubs = _context.UserSubscriptions
+                //    .Where(us => us.IsActive &&
+                //                us.EndDate.ToDateTime(TimeOnly.MinValue) >= tomorrow.ToDateTime(TimeOnly.MinValue) &&
+                //                us.RemainingCups > 0)
+                //    .ToList();
                 var activeSubs = _context.UserSubscriptions
                     .Where(us => us.IsActive &&
                                 us.EndDate >= tomorrow.ToDateTime(TimeOnly.MinValue) &&
