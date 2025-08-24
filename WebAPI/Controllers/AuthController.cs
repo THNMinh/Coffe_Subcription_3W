@@ -65,6 +65,45 @@ namespace WebAPI.Controllers
 
         #endregion
 
+        //#region Google Login
+        //[HttpPost("google-login")]
+        //[ProducesResponseType(typeof(ApiResponseDTO<LoginDTO>), StatusCodes.Status200OK)]
+        //[ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status401Unauthorized)]
+        //public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDTO request)
+        //{
+        //    string idToken = request?.Token;
+        //    if (request == null || string.IsNullOrEmpty(idToken))
+        //        return BadRequest(new ApiResponseDTO<object>
+        //        {
+        //            Success = false,
+        //            Message = "No Token provided"
+        //        });
+
+        //    try
+        //    {
+        //        var payload = await _googleAuthService.VerifyGoogleTokenAsync(idToken);
+
+        //        var email = payload.Email;
+        //        var name = payload.Name;
+        //        var googleId = payload.Subject;
+
+        //        // TODO: Check or create user in your DB
+
+        //        var appToken = _jwtService.GenerateToken(email, googleId, "1");
+
+        //        return Ok(new { token = appToken, email, name });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Unauthorized(new ApiResponseDTO<object>
+        //        {
+        //            Success = false,
+        //            Message = "Invalid Google Token."
+        //        });
+        //    }
+        //}
+        //#endregion
         #region Google Login
         [HttpPost("google-login")]
         [ProducesResponseType(typeof(ApiResponseDTO<LoginDTO>), StatusCodes.Status200OK)]
@@ -73,7 +112,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDTO request)
         {
             string idToken = request?.Token;
-            if (request == null || string.IsNullOrEmpty(idToken))
+            if (string.IsNullOrEmpty(idToken))
                 return BadRequest(new ApiResponseDTO<object>
                 {
                     Success = false,
@@ -88,11 +127,46 @@ namespace WebAPI.Controllers
                 var name = payload.Name;
                 var googleId = payload.Subject;
 
-                // TODO: Check or create user in your DB
+                // 1. Check user exists in DB
+                var user = await _userService.FindByEmailAsync(email);
 
-                var appToken = _jwtService.GenerateToken(email, googleId, "1");
+                if (user == null)
+                {
+                    // Generate a new password
+                    string newPassword = _userService.GenerateRandomPassword();
 
-                return Ok(new { token = appToken, email, name });
+                    // Parallelize the password update and email sending
+                    var sendEmailTask = _emailService.SendEmailAsync(user.Email, "Your New Password", 
+                        $"Your new password for this {email} is: {newPassword}");
+                    var newUser = new RegisterRequestDTO
+                    {
+                        Email = email,
+                        Username = email.Split('@')[0],
+                        FullName = name,
+                        Password = newPassword,
+                        RoleId = 1,
+                    };
+
+                    await _userService.RegisterAsync(newUser);
+                }
+
+                if (!user.IsActive)
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDTO<object>
+                    {
+                        Success = false,
+                        Message = "User is not permitted to log in. Account might be deactivated or restricted."
+                    });
+                }
+
+                // 3. Generate JWT token
+                var appToken = _jwtService.GenerateToken(user.Id.ToString(), user.Email, user.RoleId.ToString());
+
+                return Ok(new ApiResponseDTO<LoginDTO>()
+                {
+                    Success = true,
+                    Data = new LoginDTO { AccessToken = appToken }
+                });
             }
             catch (Exception ex)
             {
