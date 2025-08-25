@@ -261,6 +261,7 @@ namespace WebAPI.Controllers
 
         #region Get Current User With Token
         [HttpPost("current-logged-user-with-token")]
+        [Authorize]
         [ProducesResponseType(typeof(ApiResponseDTO<UserProfileResponseDTO>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCurrentUser([FromBody] string token)
         {

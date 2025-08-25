@@ -1,4 +1,5 @@
 ﻿using Core.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -14,6 +15,7 @@ namespace WebAPI.Controllers
             _service = service;
         }
         [HttpPost("")]
+        [Authorize(Roles = "2")]
         public async Task<IActionResult> Create(int subscriptionId, string coffeeCode)
         {
             var createdSub = await _service.ProcessRedemptionAsync(subscriptionId, coffeeCode);

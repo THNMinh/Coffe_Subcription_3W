@@ -1,12 +1,13 @@
-﻿using Core.DTOs.Request;
+﻿using Core.DTOs;
+using Core.DTOs.CoffeeItemDTO;
+using Core.DTOs.Request;
 using Core.DTOs.Response;
-using Core.DTOs;
 using Core.Interfaces.Services;
 using Core.Models;
+using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Mapster;
-using Core.DTOs.CoffeeItemDTO;
 using Service.Services;
 
 namespace WebAPI.Controllers
@@ -26,7 +27,6 @@ namespace WebAPI.Controllers
         }
 
         #region Get All
-        //[Authorize(Roles = "manager")]
         [HttpGet("")]
         [ProducesResponseType(typeof(ApiResponseDTO<List<CategoryResponseDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
@@ -68,7 +68,7 @@ namespace WebAPI.Controllers
         #region Create
 
         [HttpPost("")]
-        //[Authorize(Roles = "staff")]
+        [Authorize(Roles = "2")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status500InternalServerError)]
@@ -106,7 +106,7 @@ namespace WebAPI.Controllers
         #region Update
 
         [HttpPut("{id}")]
-        //[Authorize(Roles = "staff")]
+        [Authorize(Roles = "2")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
@@ -124,7 +124,7 @@ namespace WebAPI.Controllers
         #region Delete
 
         [HttpDelete("{id}")]
-        //[Authorize(Roles = $"{nameof(RoleEnum.Manager)}")]
+        [Authorize(Roles = "2")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
@@ -157,6 +157,7 @@ namespace WebAPI.Controllers
         #region Search
 
         [HttpPost("search")]
+        [Authorize]
         [ProducesResponseType(typeof(ApiResponseDTO<PagingResponseDTO<CategoryDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get([FromBody] GetAllRequestDTO requestDTO)

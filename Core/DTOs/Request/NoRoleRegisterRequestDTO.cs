@@ -1,11 +1,14 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using static Core.Constants.Consts;
-
 
 namespace Core.DTOs.Request
 {
-    public class RegisterRequestDTO
+    public class NoRoleRegisterRequestDTO
     {
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid email address")]
@@ -20,7 +23,5 @@ namespace Core.DTOs.Request
 
         [Phone(ErrorMessage = "Invalid phone number")]
         public string? PhoneNumber { get; set; }
-        [JsonIgnore]
-        public int RoleId { get; set; } = 1;
     }
 }

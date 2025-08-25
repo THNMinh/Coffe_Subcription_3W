@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
         [HttpPost("")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Register([FromBody] RegisterRequestDTO registerRequest)
+        public async Task<IActionResult> Register([FromBody] NoRoleRegisterRequestDTO registerRequest)
         {
             if (_service.IsUserExists(1, registerRequest.Email).GetAwaiter().GetResult())
             {
@@ -45,7 +45,9 @@ namespace WebAPI.Controllers
                     Message = "Username already exists"
                 });
             }
-            await _service.RegisterAsync(registerRequest);
+            RegisterRequestDTO requestDTO = registerRequest.Adapt<RegisterRequestDTO>();
+            requestDTO.RoleId = 1;
+            await _service.RegisterAsync(requestDTO);
 
             return StatusCode(StatusCodes.Status201Created, new ApiResponseDTO<object>
             {
@@ -57,7 +59,7 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Search Users
-        //[Authorize(Roles = "manager")]
+        [Authorize(Roles = "4")]
         [HttpPost("search")]
         [ProducesResponseType(typeof(ApiResponseDTO<PagingResponseDTO<UserResponseDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
@@ -90,7 +92,7 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Get Users
-        //[Authorize(Roles = "manager")]
+        [Authorize(Roles = "4")]
         [HttpGet("")]
         [ProducesResponseType(typeof(ApiResponseDTO<List<UserResponseDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
@@ -113,7 +115,7 @@ namespace WebAPI.Controllers
 
         #region Get User
         [HttpGet("{Id}")]
-        //[Authorize(Roles = "manager")]
+        [Authorize(Roles = "4")]
         [ProducesResponseType(typeof(ApiResponseDTO<UserResponseDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
@@ -158,7 +160,7 @@ namespace WebAPI.Controllers
 
         #region Update
         [HttpPut("{id}")]
-        //[Authorize(Roles = "staff")]
+        [Authorize(Roles = "1")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
@@ -178,6 +180,7 @@ namespace WebAPI.Controllers
 
         [Authorize]
         [HttpPut("password")]
+        [Authorize(Roles = "1")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
@@ -227,6 +230,7 @@ namespace WebAPI.Controllers
 
         #region Deactive
         [HttpPut("is-active/{id}")]
+        [Authorize(Roles = "4")]
         //[Authorize(Roles = $"{nameof(RoleEnum.Manager)}")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
@@ -260,7 +264,7 @@ namespace WebAPI.Controllers
 
         #region Deactive
         [HttpPut("role-member/{id}")]
-        //[Authorize(Roles = $"{nameof(RoleEnum.Manager)}")]
+        [Authorize(Roles = "4")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]

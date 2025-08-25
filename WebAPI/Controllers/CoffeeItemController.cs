@@ -6,6 +6,7 @@ using Core.DTOs.Response;
 using Core.Interfaces.Services;
 using Core.Models;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services;
 
@@ -65,6 +66,7 @@ namespace WebAPI.Controllers
 
         #region Create
         [HttpPost("")]
+        [Authorize(Roles = "2")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Create([FromForm] CoffeeItemRequestDto dto)
         {
@@ -88,6 +90,7 @@ namespace WebAPI.Controllers
 
         #region Update
         [HttpPut("{id}")]
+        [Authorize(Roles = "2")]
         [Consumes("multipart/form-data")]
         public async Task<ActionResult> Update(int id, [FromForm] UpdateCoffeeItemDTO dto)
         {
@@ -139,6 +142,7 @@ namespace WebAPI.Controllers
 
         #region Delete
         [HttpDelete("{id}")]
+        [Authorize(Roles = "2")]
         public async Task<IActionResult> Delete(int id)
         {
             //var deleted = await _service.DeleteAsync(id);
@@ -188,6 +192,7 @@ namespace WebAPI.Controllers
 
         #region Get For User
         [HttpGet("foruser/{id}")]
+        [Authorize(Roles = "1,2")]
         public async Task<IActionResult> GetByForUserId(int id)
         {
             var coffeeItem = await _service.GetByIdAsync(id);
@@ -203,6 +208,7 @@ namespace WebAPI.Controllers
 
         #region QR Code
         [HttpPost("qrcode")]
+        [Authorize(Roles = "1,2")]
         public async Task<IActionResult> ValidateCoffee(int userId, int coffeeId)
         {
             var validationResult = await _service.ValidateCoffeeRedemptionAsync(
@@ -231,6 +237,7 @@ namespace WebAPI.Controllers
 
         #region Upload Image
         [HttpPost("image")]
+        [Authorize(Roles = "2")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadImage([FromForm] UploadImageRequestDTO request)
         {
