@@ -68,5 +68,12 @@ namespace Service.Services
         {
             return await _userSubcriptionRepository.GetByIdAsync(id);
         }
+
+        public async Task<bool> CanUserBuyPlanAsync(int userId)
+        {
+            var existingSubscription = await _userSubcriptionRepository.GetByUserIdAsync(userId);
+            // If the user already has a subscription, return false (cannot buy another)
+            return existingSubscription == null;
+        }
     }
 }

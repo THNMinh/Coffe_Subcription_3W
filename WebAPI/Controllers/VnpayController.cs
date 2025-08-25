@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Service.Services;
+using Humanizer;
 using VNPAY;
 using VNPAY.Enums;
 using VNPAY.Models;
@@ -53,6 +54,13 @@ namespace Backend_API_Testing.Controllers
         [HttpGet("CreatePaymentUrl")]
         public async Task<ActionResult<string>> CreatePaymentUrlAsync(int planId, int userId) // Change userId type to int
         {
+            bool checkUser = await _userSubscriptionService.CanUserBuyPlanAsync(userId);
+
+            if (!checkUser)
+            {
+                return BadRequest("User already has already bought drink plan");
+            }
+
             try
             {
                 var subPlan = await _subscriptionPlanRepository.GetByIdAsync(planId); // Kiểm tra xem gói đăng ký có tồn tại hay không
