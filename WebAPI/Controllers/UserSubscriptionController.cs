@@ -2,6 +2,7 @@
 using Core.DTOs.UserSubscriptionDTO;
 using Core.Interfaces.Services;
 using Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -41,33 +42,36 @@ namespace WebAPI.Controllers
             return Ok(subscription);
         }
 
-        [HttpPost("")]
-        public async Task<IActionResult> Create([FromBody] CreateUserSubscriptionDto dto)
-        {
+        //[Authorize(Roles = "2")]
+        //[HttpPost("")]
+        //public async Task<IActionResult> Create([FromBody] CreateUserSubscriptionDto dto)
+        //{
 
 
-            var sub = _mapper.Map<Core.Models.UserSubscription>(dto);
+        //    var sub = _mapper.Map<Core.Models.UserSubscription>(dto);
 
-            var createdSub = await _userSubscriptionService.CreateAsync(sub);
+        //    var createdSub = await _userSubscriptionService.CreateAsync(sub);
 
-            var createdSubresponse = _mapper.Map<UserSubscriptionResponseDto>(createdSub);
+        //    var createdSubresponse = _mapper.Map<UserSubscriptionResponseDto>(createdSub);
 
-            //var services = HttpContext.RequestServices;
-            //var logger = services.GetRequiredService<ILogger<DailyTrackingBackgroundService>>();
+        //    //var services = HttpContext.RequestServices;
+        //    //var logger = services.GetRequiredService<ILogger<DailyTrackingBackgroundService>>();
 
-            //var testService = new DailyTrackingBackgroundService(
-            //    services,
-            //    logger,
-            //    isTesting: true); // ← Testing mode ON
-            //await testService.ForceCreateRecordsForTestAsync(DateTime.Now); // Creates for "tomorrow"
+        //    //var testService = new DailyTrackingBackgroundService(
+        //    //    services,
+        //    //    logger,
+        //    //    isTesting: true); // ← Testing mode ON
+        //    //await testService.ForceCreateRecordsForTestAsync(DateTime.Now); // Creates for "tomorrow"
 
 
-            return Ok(createdSubresponse);
+        //    return Ok(createdSubresponse);
 
-        }
+        //}
 
+
+        [Authorize(Roles = "2")]
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateChapter(int id, [FromBody] UserSubscription dto)
+        public async Task<ActionResult> Update(int id, [FromBody] UserSubscription dto)
         {
             var existingChapter = await _userSubscriptionService.GetByIdAsync(id);
             if (existingChapter == null)
@@ -88,6 +92,7 @@ namespace WebAPI.Controllers
             return Ok(existingChapter);
         }
 
+        [Authorize(Roles = "2")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

@@ -4,6 +4,7 @@ using Core.DTOs.Response;
 using Core.Interfaces.Services;
 using Core.Models;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -69,7 +70,7 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Create
-
+        [Authorize(Roles = "2")]
         [HttpPost("")]
         //[Authorize(Roles = "staff")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
@@ -107,7 +108,7 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Update
-
+        [Authorize(Roles = "2")]
         [HttpPut("{id}")]
         //[Authorize(Roles = "staff")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
@@ -125,7 +126,7 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Delete
-
+        [Authorize(Roles = "2")]
         [HttpDelete("{id}")]
         //[Authorize(Roles = $"{nameof(RoleEnum.Manager)}")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]

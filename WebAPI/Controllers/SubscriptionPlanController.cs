@@ -2,6 +2,7 @@
 using Core.DTOs.SubscriptionPlanDTO;
 using Core.Interfaces.Services;
 using Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -64,6 +65,8 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Create
+        [Authorize(Roles = "2")]
+
         [HttpPost("")]
         public async Task<IActionResult> Create([FromBody] CreateSubscriptionPlanDto dto)
         {
@@ -79,6 +82,8 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Update
+        [Authorize(Roles = "2")]
+
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(int id, [FromBody] CreateSubscriptionPlanDto dto)
         {
@@ -100,6 +105,8 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Delete
+        [Authorize(Roles = "2")]
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
