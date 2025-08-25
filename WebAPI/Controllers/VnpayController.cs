@@ -99,7 +99,7 @@ namespace Backend_API_Testing.Controllers
         /// Thực hiện hành động sau khi thanh toán. URL này cần được khai báo với VNPAY để API này hoạt đồng (ví dụ: http://localhost:1234/api/Vnpay/IpnAction)
         /// </summary>
         /// <returns></returns>
-        [Authorize(Roles = "2")]
+        //[Authorize(Roles = "2")]
         [HttpGet("IpnAction")]
         public async Task<IActionResult> IpnAction()
         {
@@ -129,7 +129,7 @@ namespace Backend_API_Testing.Controllers
         /// Trả kết quả thanh toán về cho người dùng
         /// </summary>
         /// <returns></returns>
-        [Authorize(Roles = "2")]
+        //[Authorize(Roles = "2")]
         [HttpGet("Callback")]
         public async Task<ActionResult<PaymentResult>> Callback()
         {
@@ -200,7 +200,7 @@ namespace Backend_API_Testing.Controllers
 
 
         //[Authorize(Roles = "manager")]
-        [Authorize(Roles = "2, 4")]
+        //[Authorize(Roles = "2, 4")]
         [HttpGet("getallpayment")]
          
         public async Task<IActionResult> GetAllPaymentTrans()

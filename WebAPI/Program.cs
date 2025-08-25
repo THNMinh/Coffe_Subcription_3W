@@ -18,16 +18,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend",
+    options.AddPolicy("AllowAll",
         policy =>
         {
-            policy.WithOrigins(
-                    "http://localhost:5173",
-                    "https://coffee-subscription-web.vercel.app"
-                )
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
+            policy
+                .AllowAnyOrigin()   // allow ALL domains
+                .AllowAnyHeader()   // allow ALL headers
+                .AllowAnyMethod();  // allow ALL HTTP methods
         });
 });
 
