@@ -15,6 +15,18 @@ using VNPAY;
 
 
 var builder = WebApplication.CreateBuilder(args);
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // frontend URL
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials(); // if you send cookies or auth headers
+        });
+});
 
 #region Jwt configuration 
 
