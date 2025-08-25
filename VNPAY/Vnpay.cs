@@ -137,7 +137,7 @@ namespace VNPAY
                     ? "Không xác định"
                     : vnp_CardType,
                 Timestamp = string.IsNullOrEmpty(vnp_PayDate)
-                    ? DateTime.Now
+                    ? DateTime.UtcNow
                     : DateTime.ParseExact(vnp_PayDate, "yyyyMMddHHmmss", CultureInfo.InvariantCulture),
                 TransactionStatus = new TransactionStatus
                 {
@@ -158,16 +158,16 @@ namespace VNPAY
                 }
             };
 
-            var transaction = await _paymentTransactionService.GetByOrderIdAsync(paymentResult.PaymentId.ToString());
+            //var transaction = await _paymentTransactionService.GetByOrderIdAsync(paymentResult.PaymentId.ToString());
 
-            if (paymentResult.IsSuccess)
-            {
-                if (transaction != null)
-                {
-                    transaction.TransactionStatus = "success";
-                    await _paymentTransactionService.UpdateAsync(transaction);
-                }
-            }
+            //if (paymentResult.IsSuccess)
+            //{
+            //    if (transaction != null)
+            //    {
+            //        transaction.TransactionStatus = "success";
+            //        await _paymentTransactionService.UpdateAsync(transaction);
+            //    }
+            //}
 
             return paymentResult;
         }

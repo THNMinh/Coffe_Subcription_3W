@@ -10,5 +10,7 @@ namespace Core.Interfaces.Services
         Task<bool> UpdateAsync(UserSubscription transaction);
         Task<bool> DeleteAsync(int id);
         Task<UserSubscription?> GetByUserIdAsync(int id);
+        Task<bool> CanUserBuyPlanAsync(int userId);
+
     }
 }

@@ -2,6 +2,7 @@
 using Core.DTOs.PlanCoffeeOptionDTO;
 using Core.Interfaces.Services;
 using Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -19,13 +20,16 @@ namespace WebAPI.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("getAll")]
+        #region Get All
+        [HttpGet("")]
         public async Task<IActionResult> Get()
         {
             var result = await _service.GetAllPlanCoffeeOptionAsync();
             return Ok(result);
         }
+        #endregion
 
+        #region Get
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -36,8 +40,11 @@ namespace WebAPI.Controllers
             }
             return Ok(coffeeItem);
         }
+        #endregion
 
-        [HttpPost("create")]
+        #region Create
+        [Authorize (Roles = "2")]
+        [HttpPost("")]
         public async Task<IActionResult> Create([FromBody] CreatePlanCoffeeOptionDto dto)
         {
             if (dto == null)
@@ -49,7 +56,10 @@ namespace WebAPI.Controllers
             var createdCoffeeItem = await _service.CreateAsync(coffeeItem);
             return Ok(_mapper.Map<PlanCoffeeOptionResponseDto>(createdCoffeeItem));
         }
+        #endregion
 
+        #region Update
+        [Authorize(Roles = "2")]
 
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(int id, [FromBody] CreatePlanCoffeeOptionDto dto)
@@ -69,17 +79,24 @@ namespace WebAPI.Controllers
 
             return Ok(_mapper.Map<PlanCoffeeOptionResponseDto>(existingCoffee));
         }
+        #endregion
+
+        #region Delete
+        [Authorize(Roles = "2")]
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _service.DeleteAsync(id);
-            if (!deleted)
+            var deleted = await _service.GetByIdAsync(id);
+            if (deleted == null)
             {
                 return NotFound();
             }
-            return Ok();
+            deleted.IsDelete = true;
+            var success = await _service.UpdateAsync(deleted);
 
+            return Ok();         
         }
+        #endregion
     }
 }

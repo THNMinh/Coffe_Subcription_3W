@@ -10,6 +10,8 @@ namespace Core.MappingProfile
         public CoffeeItemProfile()
         {
             CreateMap<CoffeeItem, CoffeeItemResponseDto>();
+            CreateMap<CoffeeItem, CoffeeItemHideCodeResponseDto>();
+
             CreateMap<CreateCoffeeItemDto, CoffeeItem>();
             CreateMap<CoffeeItemRequestDto, CoffeeItem>()
            .ForMember(dest => dest.ImageUrl, opt => opt.Ignore());

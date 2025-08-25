@@ -2,7 +2,6 @@
 {
     public class CreateCoffeeItemDto
     {
-
         public int? CategoryId { get; set; }
 
         public string CoffeeName { get; set; } = null!;

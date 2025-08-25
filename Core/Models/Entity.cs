@@ -1,9 +1,11 @@
-﻿namespace Core.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Core.Models
 {
     public abstract class Entity
     {
-        public virtual int Id { get; set; }
-        public virtual bool IsActive { get; set; }
+        [Column("is_delete")]
+        public virtual bool IsDelete { get; set; }
         protected Entity()
         {
         }

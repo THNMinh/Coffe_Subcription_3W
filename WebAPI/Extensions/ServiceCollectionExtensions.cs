@@ -12,6 +12,9 @@ namespace Core.Extensions
             services.AddHttpContextAccessor();
             services.AddScoped<IJwtService, JwtService>();
 
+            //-----------------Pagination-----------------
+            services.AddScoped(typeof(IPaginationService<>), typeof(PaginationService<>));
+
             //-----------------User-----------------
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();

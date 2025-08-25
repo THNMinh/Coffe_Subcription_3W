@@ -28,6 +28,12 @@ namespace Service.Services
             return dtos;
         }
 
+        public async Task<SubscriptionTimeWindow?> GetByIdAsyncForDelete(int id)
+        {
+            var tracking = await _repo.GetByIdAsync(id);
+            //var dtos = tracking.Adapt<SubscriptionTimeWindowDTO>();
+            return tracking;
+        }
         public async Task<SubscriptionTimeWindowDTO> CreateAsync(SubscriptionTimeWindow timeWindow)
         {
             await _repo.CreateAsync(timeWindow);

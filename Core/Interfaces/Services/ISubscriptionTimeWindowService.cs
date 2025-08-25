@@ -8,6 +8,8 @@ namespace Core.Interfaces.Services
         Task<List<SubscriptionTimeWindowDTO>> GetAllSubscriptionTimeWindowsAsync();
         Task<SubscriptionTimeWindowDTO?> GetByIdAsync(int id);
 
+        Task<SubscriptionTimeWindow?> GetByIdAsyncForDelete(int id);
+
         Task<SubscriptionTimeWindowDTO> CreateAsync(SubscriptionTimeWindow timeWindow);
 
         Task<bool> UpdateAsync(SubscriptionTimeWindow timeWindow);

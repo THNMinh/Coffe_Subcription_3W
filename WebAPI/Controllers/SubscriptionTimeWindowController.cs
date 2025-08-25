@@ -4,6 +4,7 @@ using Core.DTOs.Response;
 using Core.Interfaces.Services;
 using Core.Models;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -20,7 +21,7 @@ namespace WebAPI.Controllers
         }
         #region Get All
 
-        [HttpPost("getAll")]
+        [HttpGet("")]
         [ProducesResponseType(typeof(ApiResponseDTO<SubscriptionTimeWindowDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAll()
@@ -69,8 +70,8 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Create
-
-        [HttpPost("create")]
+        [Authorize(Roles = "2")]
+        [HttpPost("")]
         //[Authorize(Roles = "staff")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status400BadRequest)]
@@ -107,7 +108,7 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Update
-
+        [Authorize(Roles = "2")]
         [HttpPut("{id}")]
         //[Authorize(Roles = "staff")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
@@ -125,7 +126,7 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Delete
-
+        [Authorize(Roles = "2")]
         [HttpDelete("{id}")]
         //[Authorize(Roles = $"{nameof(RoleEnum.Manager)}")]
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status200OK)]
@@ -133,18 +134,27 @@ namespace WebAPI.Controllers
         [ProducesResponseType(typeof(ApiResponseDTO<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            var success = await _service.DeleteAsync(id);
+
+            var category = await _service.GetByIdAsyncForDelete(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            category.IsDelete = false;
+            var success = await _service.UpdateAsync(category);
+
+            //var success = await _service.DeleteAsync(id);
 
             if (!success)
             {
                 return NotFound(new ApiResponseDTO<object>
                 {
                     Success = false,
-                    Message = "Subscription Time Window not found"
+                    Message = "Subscription time window tracking not found"
                 });
             }
 
-            return Ok(new ApiResponseDTO<object> { Success = true }); // Successfully deleted
+            return Ok(new ApiResponseDTO<object> { Success = true });
         }
 
         #endregion

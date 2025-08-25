@@ -1,11 +1,16 @@
-﻿using Core.DTOs;
+﻿using System.Linq.Expressions;
+using Core.DTOs;
+using Core.DTOs.CoffeeItemDTO;
+using Core.DTOs.Request;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
+using Core.Utils;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Repository.Repositories;
 
 namespace Service.Services
 {
@@ -31,6 +36,11 @@ namespace Service.Services
                 var tomorrow = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
 
                 // Get active subscriptions that will be valid tomorrow
+                //var activeSubs = _context.UserSubscriptions
+                //    .Where(us => us.IsActive &&
+                //                us.EndDate.ToDateTime(TimeOnly.MinValue) >= tomorrow.ToDateTime(TimeOnly.MinValue) &&
+                //                us.RemainingCups > 0)
+                //    .ToList();
                 var activeSubs = _context.UserSubscriptions
                     .Where(us => us.IsActive &&
                                 us.EndDate >= tomorrow.ToDateTime(TimeOnly.MinValue) &&
@@ -122,6 +132,13 @@ namespace Service.Services
             return dtos;
         }
 
+        public async Task<DailyCupTracking?> GetByIdAsyncForDelete(int id)
+        {
+            var tracking = await _repo.GetByIdAsync(id);
+            //var dtos = tracking.Adapt<DailyCupTrackingDTO>();
+            return tracking;
+        }
+
         public async Task<DailyCupTracking> CreateAsync(DailyCupTracking tracking)
         {
             await _repo.CreateAsync(tracking);
@@ -139,6 +156,30 @@ namespace Service.Services
         {
             await _repo.DeleteAsync(id);
             return true;
+        }
+        public async Task<(IEnumerable<DailyCupTrackingDTO>, int totalItems)> GetAllWithSearch(Search searchCondition, PageInfoRequestDTO pageInfo)
+        {
+            // Start with a base filter that is always true
+            Expression<Func<DailyCupTracking, bool>> filter = u => true;
+            // Apply filters dynamically
+            if (!string.IsNullOrEmpty(searchCondition.Keyword))
+            {
+                string keyword = searchCondition.Keyword.ToLower();
+
+                if (DateOnly.TryParse(searchCondition.Keyword, out DateOnly parsedDate))
+                {
+                    filter = ExpressionUtils.AddFilter(filter, c =>
+                        c.Date == parsedDate);
+                }
+                filter = ExpressionUtils.AddFilter(filter, c => c.IsDelete == searchCondition.IsDelete);
+            }
+            var items = await _repo.GetWithPaginationAsync(pageInfo, filter);
+            int totalItems = await _repo.CountAsync(filter);
+
+            List<DailyCupTrackingDTO> itemDTOs = items.Select(items => items.Adapt<DailyCupTrackingDTO>()).ToList();
+
+            return (itemDTOs, totalItems);
+
         }
     }
 }

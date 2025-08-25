@@ -1,6 +1,6 @@
 ﻿namespace Core.Models;
 
-public partial class SubscriptionTimeWindow
+public partial class SubscriptionTimeWindow : Entity
 {
     public int WindowId { get; set; }
 
