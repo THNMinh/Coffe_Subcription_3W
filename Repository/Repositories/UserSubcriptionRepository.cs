@@ -37,14 +37,26 @@ namespace Repository.Repositories
 
         public async Task<List<UserSubscription>> GetActiveSubscriptionsAsync(DateTime forDate)
         {
+            var utcDate = forDate.Kind == DateTimeKind.Utc ? forDate : forDate.ToUniversalTime();
             return await _context.UserSubscriptions
                 .Include(us => us.Plan)
                 .Where(us => us.IsActive &&
-                            us.StartDate <= forDate &&
-                            us.EndDate >= forDate &&
+                            us.StartDate <= utcDate &&
+                            us.EndDate >= utcDate &&
                             us.RemainingCups > 0)
                 .ToListAsync();
         }
+
+        //public async Task<List<UserSubscription>> GetActiveSubscriptionsAsync(DateTime forDate)
+        //{
+        //    return await _context.UserSubscriptions
+        //        .Include(us => us.Plan)
+        //        .Where(us => us.IsActive &&
+        //                    us.StartDate <= forDate &&
+        //                    us.EndDate >= forDate &&
+        //                    us.RemainingCups > 0)
+        //        .ToListAsync();
+        //}
 
         public async Task<UserSubscription?> GetActiveSubscriptionAsync(int subscriptionId)
         {
